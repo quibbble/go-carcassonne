@@ -2,11 +2,11 @@ package go_carcassonne
 
 // Action types
 const (
-	PlaceTile   = "PlaceTile"
-	PlaceToken  = "PlaceToken"
-	RotateRight = "RotateRight"
-	RotateLeft  = "RotateLeft"
-	Reset       = "Reset"
+	PlaceTile       = "PlaceTile"
+	PlaceToken      = "PlaceToken"
+	RotateTileRight = "RotateTileRight"
+	RotateTileLeft  = "RotateTileLeft"
+	Reset           = "Reset"
 )
 
 // PlaceTileActionDetails is the action details for placing a tile
@@ -38,7 +38,7 @@ type PlaceTokenActionDetails struct {
 type CarcassonneSnapshotDetails struct {
 	PlayTile       *tile
 	LastPlacedTile *tile
-	Board          *board
+	Board          []*tile
 	BoardTokens    []*token
 	Tokens         map[string]int
 	Scores         map[string]int

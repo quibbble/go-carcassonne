@@ -17,7 +17,7 @@ To rotate the play tile (the tile about to be placed by the current team) do the
 ```go
 err := game.Do(bg.BoardGameAction{
     Team: "TeamA",
-    ActionType: "RotateRight", // can also be "RotateLeft"
+    ActionType: "RotateTileRight", // can also be "RotateTileLeft"
 })
 ```
 

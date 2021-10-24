@@ -37,6 +37,14 @@ func NewCarcassonne(options bg.BoardGameOptions) (*Carcassonne, error) {
 
 func (c *Carcassonne) Do(action bg.BoardGameAction) error {
 	switch action.ActionType {
+	case RotateTileRight:
+		if err := c.state.RotateTileRight(action.Team); err != nil {
+			return err
+		}
+	case RotateTileLeft:
+		if err := c.state.RotateTileLeft(action.Team); err != nil {
+			return err
+		}
 	case PlaceTile:
 		var details PlaceTileActionDetails
 		if err := mapstructure.Decode(action.MoreDetails, &details); err != nil {
@@ -63,14 +71,6 @@ func (c *Carcassonne) Do(action bg.BoardGameAction) error {
 			return err
 		}
 		c.actions = append(c.actions, &action)
-	case RotateRight:
-		if err := c.state.RotateRight(action.Team); err != nil {
-			return err
-		}
-	case RotateLeft:
-		if err := c.state.RotateLeft(action.Team); err != nil {
-			return err
-		}
 	case Reset:
 		c.state = newState(c.state.teams)
 		c.actions = make([]*bg.BoardGameAction, 0)
@@ -91,7 +91,7 @@ func (c *Carcassonne) GetSnapshot(team string) (bg.BoardGameSnapshot, error) {
 		MoreData: CarcassonneSnapshotDetails{
 			PlayTile:       c.state.playTile,
 			LastPlacedTile: c.state.lastPlacedTile,
-			Board:          c.state.board,
+			Board:          c.state.board.board,
 			BoardTokens:    c.state.boardTokens,
 			Tokens:         c.state.tokens,
 			Scores:         c.state.scores,
