@@ -25,6 +25,14 @@ type tile struct {
 	adjacent map[string]*tile
 }
 
+func emptySpaceTile(x, y int) *tile {
+	return &tile{
+		X:        x,
+		Y:        y,
+		adjacent: make(map[string]*tile),
+	}
+}
+
 func newTile(topStructure, rightStructure, bottomStructure, leftStructure, centerStructure string, connectedCitySides, banner bool) *tile {
 	return &tile{
 		X:                  OutOfBounds,

@@ -370,9 +370,11 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 	if !s.deck.Empty() {
 		tile, _ := s.deck.Draw()
 		// check to ensure can play
-		for !s.board.playable(tile) {
+		breaker := 0
+		for !s.board.playable(tile) && breaker < 9 {
 			s.deck.Add(tile)
 			tile, _ = s.deck.Draw()
+			breaker++
 		}
 		s.playTile = tile
 		s.lastPlacedTile = nil

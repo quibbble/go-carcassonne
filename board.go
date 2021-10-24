@@ -353,16 +353,55 @@ func (b *board) tilesSurroundingCloister(x, y int) (int, error) {
 }
 
 func (b *board) playable(t *tile) bool {
+	// go through board and get all empty spaces
+	emptySpaces := make(map[string]*tile)
 	for _, boardTile := range b.board {
 		for _, side := range Sides {
-			if boardTile.adjacent[side] == nil {
-				section := boardTile.Sides[side]
-				for _, s := range Sides {
-					if t.Sides[s] == section {
-						return true
-					}
-				}
+			x := boardTile.X
+			y := boardTile.Y
+			if side == SideTop {
+				y++
+			} else if side == SideRight {
+				x++
+			} else if side == SideBottom {
+				y--
+			} else if side == SideLeft {
+				x--
 			}
+			if boardTile.adjacent[side] == nil && emptySpaces[fmt.Sprintf("%d%d", x, y)] == nil {
+				emptySpaces[fmt.Sprintf("%d%d", x, y)] = emptySpaceTile(x, y)
+			}
+		}
+	}
+	// go through board and get all tiles adjacent to empty spaces
+	for _, boardTile := range b.board {
+		for _, side := range Sides {
+			x := boardTile.X
+			y := boardTile.Y
+			if side == SideTop {
+				y++
+			} else if side == SideRight {
+				x++
+			} else if side == SideBottom {
+				y--
+			} else if side == SideLeft {
+				x--
+			}
+			if boardTile.adjacent[side] == nil {
+				emptySpaces[fmt.Sprintf("%d%d", x, y)].adjacent[AcrossSide[side]] = boardTile
+			}
+		}
+	}
+	// go through empty spaces looking for at least one place the tile can be placed
+	for _, emptySpace := range emptySpaces {
+		valid := true
+		for _, side := range Sides {
+			if emptySpace.adjacent[side] != nil && emptySpace.adjacent[side].Sides[AcrossSide[side]] != t.Sides[side] {
+				valid = false
+			}
+		}
+		if valid {
+			return true
 		}
 	}
 	return false
