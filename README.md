@@ -7,14 +7,14 @@ Please check out [Quibbble.com](https://quibbble.com/annex) if you wish to view 
 ## Game API
 
 To play a game create a new Carcassonne instance:
-```
+```go
 carcassonne, err := NewCarcassonne(bg.BoardGameOptions{
     Teams: []string{"TeamA", "TeamB"} // must contain at least 2 and at most 5 teams
 })
 ```
 
 To rotate the play tile (the tile about to be place by the current team) do the following action:
-```
+```go
 carcassonne.Do(bg.BoardGameAction{
     Team: "TeamA",
     ActionType: "RotateRight", // can also be "RotateLeft"
@@ -22,7 +22,7 @@ carcassonne.Do(bg.BoardGameAction{
 ```
 
 To place the play tile on the board do the following action:
-```
+```go
 carcassonne.Do(bg.BoardGameAction{
     Team: "TeamA",
     ActionType: "PlaceTile",
@@ -34,7 +34,7 @@ carcassonne.Do(bg.BoardGameAction{
 ```
 
 To place a token on the last placed tile do the following action:
-```
+```go
 carcassonne.Do(bg.BoardGameAction{
     Team: "TeamA",
     ActionType: "PlaceToken",
