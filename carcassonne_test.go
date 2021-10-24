@@ -12,14 +12,18 @@ const (
 )
 
 func Test_Carcassonne(t *testing.T) {
-	Carcassonne := NewCarcassonne(bg.BoardGameOptions{Teams: []string{TeamA, TeamB}})
+	carcassonne, err := NewCarcassonne(bg.BoardGameOptions{Teams: []string{TeamA, TeamB}})
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 
-	assert.Equal(t, len(Carcassonne.state.board.board), 1, "board missing start tile")
+	assert.Equal(t, len(carcassonne.state.board.board), 1, "board missing start tile")
 
 	// place all road tile to right of start tile
-	Carcassonne.state.playTile = NewTile(Road, Road, Road, Road, NilStructure, false, false)
-	Carcassonne.state.turn = TeamA
-	err := Carcassonne.Do(bg.BoardGameAction{
+	carcassonne.state.playTile = newTile(Road, Road, Road, Road, NilStructure, false, false)
+	carcassonne.state.turn = TeamA
+	err = carcassonne.Do(bg.BoardGameAction{
 		Team:       TeamA,
 		ActionType: PlaceTile,
 		MoreDetails: PlaceTileActionDetails{
@@ -32,10 +36,10 @@ func Test_Carcassonne(t *testing.T) {
 		t.FailNow()
 	}
 
-	assert.Equal(t, len(Carcassonne.state.board.board), 2, "board missing last placed tile")
+	assert.Equal(t, len(carcassonne.state.board.board), 2, "board missing last placed tile")
 
 	// place token in left B side of farmland
-	err = Carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(bg.BoardGameAction{
 		Team:       TeamA,
 		ActionType: PlaceToken,
 		MoreDetails: PlaceTokenActionDetails{
@@ -51,13 +55,13 @@ func Test_Carcassonne(t *testing.T) {
 		t.FailNow()
 	}
 
-	assert.Equal(t, len(Carcassonne.state.boardTokens), 1, "missing placed token")
-	assert.Equal(t, Carcassonne.state.boardTokens[0].Type, Farmer, "incorrect token placed")
-	assert.Equal(t, Carcassonne.state.turn, TeamB, "incorrect team's turn")
+	assert.Equal(t, len(carcassonne.state.boardTokens), 1, "missing placed token")
+	assert.Equal(t, carcassonne.state.boardTokens[0].Type, Farmer, "incorrect token placed")
+	assert.Equal(t, carcassonne.state.turn, TeamB, "incorrect team's turn")
 
 	// place tile to left of start tile completing a road segment
-	Carcassonne.state.playTile = NewTile(Road, Road, Farm, Road, NilStructure, false, false)
-	err = Carcassonne.Do(bg.BoardGameAction{
+	carcassonne.state.playTile = newTile(Road, Road, Farm, Road, NilStructure, false, false)
+	err = carcassonne.Do(bg.BoardGameAction{
 		Team:       TeamB,
 		ActionType: PlaceTile,
 		MoreDetails: PlaceTileActionDetails{
@@ -70,10 +74,10 @@ func Test_Carcassonne(t *testing.T) {
 		t.FailNow()
 	}
 
-	assert.Equal(t, len(Carcassonne.state.board.board), 3, "board missing last place tile")
+	assert.Equal(t, len(carcassonne.state.board.board), 3, "board missing last place tile")
 
 	// claim the completed road by placing thief on right side of tile
-	err = Carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(bg.BoardGameAction{
 		Team:       TeamB,
 		ActionType: PlaceToken,
 		MoreDetails: PlaceTokenActionDetails{
@@ -89,11 +93,11 @@ func Test_Carcassonne(t *testing.T) {
 		t.FailNow()
 	}
 
-	assert.Equal(t, len(Carcassonne.state.boardTokens), 1)
-	assert.Equal(t, Carcassonne.state.scores[TeamB], 3)
-	assert.Equal(t, Carcassonne.state.board.board[0].Teams[SideLeft], []string{TeamB})
-	assert.Equal(t, Carcassonne.state.board.board[0].Teams[SideRight], []string{TeamB})
-	assert.Equal(t, Carcassonne.state.board.board[1].Teams[SideLeft], []string{TeamB})
-	assert.Equal(t, Carcassonne.state.board.board[2].Teams[SideRight], []string{TeamB})
-	assert.Equal(t, Carcassonne.state.turn, TeamA)
+	assert.Equal(t, len(carcassonne.state.boardTokens), 1)
+	assert.Equal(t, carcassonne.state.scores[TeamB], 3)
+	assert.Equal(t, carcassonne.state.board.board[0].Teams[SideLeft], []string{TeamB})
+	assert.Equal(t, carcassonne.state.board.board[0].Teams[SideRight], []string{TeamB})
+	assert.Equal(t, carcassonne.state.board.board[1].Teams[SideLeft], []string{TeamB})
+	assert.Equal(t, carcassonne.state.board.board[2].Teams[SideRight], []string{TeamB})
+	assert.Equal(t, carcassonne.state.turn, TeamA)
 }

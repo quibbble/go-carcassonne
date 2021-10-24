@@ -7,16 +7,32 @@ import (
 	"github.com/quibbble/go-boardgame/pkg/bgerr"
 )
 
+const (
+	minTeams = 2
+	maxTeams = 5
+)
+
 type Carcassonne struct {
 	state   *state
 	actions []*bg.BoardGameAction
 }
 
-func NewCarcassonne(options bg.BoardGameOptions) *Carcassonne {
-	return &Carcassonne{
-		state:   NewState(options.Teams),
-		actions: make([]*bg.BoardGameAction, 0),
+func NewCarcassonne(options bg.BoardGameOptions) (*Carcassonne, error) {
+	if len(options.Teams) < minTeams {
+		return nil, &bgerr.Error{
+			Err:    fmt.Errorf("at least %d teams required to create a game of %s", minTeams, key),
+			Status: bgerr.StatusTooFewTeams,
+		}
+	} else if len(options.Teams) > maxTeams {
+		return nil, &bgerr.Error{
+			Err:    fmt.Errorf("at most %d teams allowed to create a game of %s", maxTeams, key),
+			Status: bgerr.StatusTooManyTeams,
+		}
 	}
+	return &Carcassonne{
+		state:   newState(options.Teams),
+		actions: make([]*bg.BoardGameAction, 0),
+	}, nil
 }
 
 func (c *Carcassonne) Do(action bg.BoardGameAction) error {
@@ -56,7 +72,7 @@ func (c *Carcassonne) Do(action bg.BoardGameAction) error {
 			return err
 		}
 	case Reset:
-		c.state = NewState(c.state.teams)
+		c.state = newState(c.state.teams)
 		c.actions = make([]*bg.BoardGameAction, 0)
 	default:
 		return &bgerr.Error{

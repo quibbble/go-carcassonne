@@ -2,6 +2,8 @@ package go_carcassonne
 
 import "fmt"
 
+const OutOfBounds = 999
+
 type tile struct {
 	// X and Y represent the location of the tile on the board, OutOfBounds means not in board
 	X, Y int
@@ -23,7 +25,7 @@ type tile struct {
 	adjacent map[string]*tile
 }
 
-func NewTile(topStructure, rightStructure, bottomStructure, leftStructure, centerStructure string, connectedCitySides, banner bool) *tile {
+func newTile(topStructure, rightStructure, bottomStructure, leftStructure, centerStructure string, connectedCitySides, banner bool) *tile {
 	return &tile{
 		X:                  OutOfBounds,
 		Y:                  OutOfBounds,
@@ -39,7 +41,7 @@ func NewTile(topStructure, rightStructure, bottomStructure, leftStructure, cente
 }
 
 func (t *tile) copy() *tile {
-	return NewTile(t.Sides[SideTop], t.Sides[SideRight], t.Sides[SideBottom], t.Sides[SideLeft], t.Center, t.ConnectedCitySides, t.Banner)
+	return newTile(t.Sides[SideTop], t.Sides[SideRight], t.Sides[SideBottom], t.Sides[SideLeft], t.Center, t.ConnectedCitySides, t.Banner)
 }
 
 func (t *tile) RotateRight() {
@@ -61,7 +63,7 @@ func (t *tile) RotateLeft() {
 // given a city side on the tile get all connected city sides
 func (t *tile) connectedCitySides(side string) ([]string, error) {
 	sides := make([]string, 0)
-	if !Contains(Sides, side) {
+	if !contains(Sides, side) {
 		return nil, fmt.Errorf("invalid side %s", side)
 	}
 	if t.Sides[side] != City {
@@ -82,7 +84,7 @@ func (t *tile) connectedCitySides(side string) ([]string, error) {
 // given a road side on the tile get all connected road sides
 func (t *tile) connectedRoadSides(side string) ([]string, error) {
 	sides := make([]string, 0)
-	if !Contains(Sides, side) {
+	if !contains(Sides, side) {
 		return nil, fmt.Errorf("invalid side %s", side)
 	}
 	if t.Sides[side] != Road {
@@ -102,7 +104,7 @@ func (t *tile) connectedRoadSides(side string) ([]string, error) {
 
 func (t *tile) connectedFarmSides(farmSide string) ([]string, error) {
 	points := make([]string, 0)
-	if !Contains(FarmSides, farmSide) {
+	if !contains(FarmSides, farmSide) {
 		return nil, fmt.Errorf("invalid farm side %s", farmSide)
 	}
 	side := farmSideToSide(farmSide)

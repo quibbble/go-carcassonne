@@ -17,7 +17,7 @@ type token struct {
 	Side string // normal side if Knight or Thief, farm side if Farmer, empty if Monk
 }
 
-func NewToken(x, y int, team, typ, side string) *token {
+func newToken(x, y int, team, typ, side string) *token {
 	return &token{
 		X:    x,
 		Y:    y,

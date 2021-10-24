@@ -9,7 +9,7 @@ type deck struct {
 	tiles []*tile
 }
 
-func NewDeck() *deck {
+func newDeck() *deck {
 	tiles := make([]*tile, 0)
 	for tile, num := range Tiles {
 		for i := 0; i < num; i++ {

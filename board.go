@@ -17,7 +17,7 @@ type board struct {
 	completeRoads  []*structure
 }
 
-func NewBoard() *board {
+func newBoard() *board {
 	start := StartTile.copy()
 	start.X, start.Y = 0, 0
 	return &board{
@@ -133,7 +133,7 @@ func (b *board) generateCity(x, y int, side string) (*structure, error) {
 				// edge case for disconnected city sides that end up being part of the same city
 				for _, n := range seen {
 					if adjacentTile.X == n.tile.X && adjacentTile.Y == n.tile.Y {
-						if !Contains(n.sides, AcrossSide[s]) {
+						if !contains(n.sides, AcrossSide[s]) {
 							n.sides = append(n.sides, AcrossSide[s])
 						}
 					}
@@ -163,7 +163,7 @@ func (b *board) generateCity(x, y int, side string) (*structure, error) {
 					}
 					for _, n := range seen {
 						if n.tile.X == x && n.tile.Y == y {
-							if Contains(n.sides, AcrossSide[side]) && !Contains(seenNode.sides, side) {
+							if contains(n.sides, AcrossSide[side]) && !contains(seenNode.sides, side) {
 								seenNode.sides = append(seenNode.sides, side)
 							}
 						}
@@ -221,7 +221,7 @@ func (b *board) generateRoad(x, y int, side string) (*structure, error) {
 				// edge case for disconnected road sides that end up being part of the same road
 				for _, n := range seen {
 					if adjacentTile.X == n.tile.X && adjacentTile.Y == n.tile.Y {
-						if !Contains(n.sides, AcrossSide[s]) {
+						if !contains(n.sides, AcrossSide[s]) {
 							n.sides = append(n.sides, AcrossSide[s])
 						}
 					}
@@ -251,7 +251,7 @@ func (b *board) generateRoad(x, y int, side string) (*structure, error) {
 					}
 					for _, n := range seen {
 						if n.tile.X == x && n.tile.Y == y {
-							if Contains(n.sides, AcrossSide[side]) && !Contains(seenNode.sides, side) {
+							if contains(n.sides, AcrossSide[side]) && !contains(seenNode.sides, side) {
 								seenNode.sides = append(seenNode.sides, side)
 							}
 						}
@@ -303,7 +303,7 @@ func (b *board) generateFarm(x, y int, farmSide string) (*structure, error) {
 			if fmt.Sprintf("%d%d", s.tile.X, s.tile.Y) == fmt.Sprintf("%d%d", front.tile.X, front.tile.Y) {
 				// check if all sides have been found and if not add those sides
 				for _, side := range sides {
-					if !Contains(s.sides, side) {
+					if !contains(s.sides, side) {
 						s.sides = append(s.sides, side)
 					}
 				}

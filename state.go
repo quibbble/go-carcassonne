@@ -21,14 +21,14 @@ type state struct {
 	deck           *deck
 }
 
-func NewState(teams []string) *state {
+func newState(teams []string) *state {
 	tokens := make(map[string]int)
 	scores := make(map[string]int)
 	for _, team := range teams {
 		tokens[team] = 7
 		scores[team] = 0
 	}
-	deck := NewDeck()
+	deck := newDeck()
 	playTile, _ := deck.Draw()
 	return &state{
 		turn:           teams[rand.Intn(len(teams))],
@@ -36,7 +36,7 @@ func NewState(teams []string) *state {
 		winners:        make([]string, 0),
 		playTile:       playTile,
 		lastPlacedTile: nil,
-		board:          NewBoard(),
+		board:          newBoard(),
 		boardTokens:    make([]*token, 0),
 		tokens:         tokens,
 		scores:         scores,
@@ -98,18 +98,18 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 				Status: bgerr.StatusInvalidAction,
 			}
 		}
-		if !Contains(TokenTypes, typ) {
+		if !contains(TokenTypes, typ) {
 			return &bgerr.Error{
 				Err:    fmt.Errorf("invalid token type %s", typ),
 				Status: bgerr.StatusInvalidActionDetails,
 			}
 		}
-		if (typ == Thief || typ == Knight) && !Contains(Sides, side) {
+		if (typ == Thief || typ == Knight) && !contains(Sides, side) {
 			return &bgerr.Error{
 				Err:    fmt.Errorf("invalid side %s with token %s", side, typ),
 				Status: bgerr.StatusInvalidActionDetails,
 			}
-		} else if typ == Farmer && !Contains(FarmSides, side) {
+		} else if typ == Farmer && !contains(FarmSides, side) {
 			return &bgerr.Error{
 				Err:    fmt.Errorf("invalid farm side %s with token %s", side, typ),
 				Status: bgerr.StatusInvalidActionDetails,
@@ -176,7 +176,7 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 		}
 		// add the token
 		s.tokens[team]--
-		token := NewToken(x, y, team, typ, side)
+		token := newToken(x, y, team, typ, side)
 		s.boardTokens = append(s.boardTokens, token)
 	}
 	// score completed cities
@@ -539,7 +539,7 @@ func tokensInStructure(tokens []*token, structure *structure) []*token {
 		for _, n := range structure.nodes {
 			// check if token type matches section type and token on node
 			if StructureTypeToTokenType[structure.typ] == token.Type &&
-				n.tile.X == token.X && n.tile.Y == token.Y && Contains(n.sides, token.Side) {
+				n.tile.X == token.X && n.tile.Y == token.Y && contains(n.sides, token.Side) {
 				tokensInside = append(tokensInside, token)
 			}
 		}
