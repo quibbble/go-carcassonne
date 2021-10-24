@@ -2,7 +2,7 @@
 
 Go-carcassonne is a Golang implementation of the game logic for the board game [Carcassonne](https://boardgamegeek.com/boardgame/822/carcassonne). Please note that this repo only includes game logic and a basic API to interact with the game but does NOT include any form of GUI.
 
-Please check out [Quibbble.com](https://quibbble.com/annex) if you wish to view and play a live version of this game which utilizes this project along with a custom UI.
+Please check out [quibbble.com](https://quibbble.com/annex) if you wish to view and play a live version of this game which utilizes this project along with a custom UI.
 
 ## Game API
 
@@ -13,7 +13,7 @@ carcassonne, err := NewCarcassonne(bg.BoardGameOptions{
 })
 ```
 
-To rotate the play tile (the tile about to be place by the current team) do the following action:
+To rotate the play tile (the tile about to be placed by the current team) do the following action:
 ```go
 carcassonne.Do(bg.BoardGameAction{
     Team: "TeamA",
