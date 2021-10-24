@@ -76,7 +76,10 @@ func (s *state) PlaceTile(team string, x, y int) error {
 
 func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) error {
 	if len(s.winners) > 0 {
-		return fmt.Errorf("game already over")
+		return &bgerr.Error{
+			Err:    fmt.Errorf("%s game already completed", key),
+			Status: bgerr.StatusGameOver,
+		}
 	}
 	if team != s.turn {
 		return &bgerr.Error{
