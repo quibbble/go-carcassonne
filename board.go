@@ -18,7 +18,7 @@ type board struct {
 }
 
 func newBoard() *board {
-	start := StartTile.copy()
+	start := startTile.copy()
 	start.X, start.Y = 0, 0
 	return &board{
 		board: []*tile{start},

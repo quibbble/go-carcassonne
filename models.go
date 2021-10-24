@@ -45,11 +45,11 @@ type CarcassonneSnapshotDetails struct {
 	TilesRemaining int
 }
 
-// StartTile the tile at 0,0 at the start of the game
-var StartTile = newTile(City, Road, Farm, Road, NilStructure, false, false)
+// startTile the tile at 0,0 at the start of the game
+var startTile = newTile(City, Road, Farm, Road, NilStructure, false, false)
 
-// Tiles are all the tiles in that will be placed
-var Tiles = map[*tile]int{
+// tiles are all the tiles in that will be placed
+var tiles = map[*tile]int{
 	newTile(Farm, Farm, Farm, Farm, Cloister, false, false):     4,
 	newTile(Farm, Farm, Road, Farm, Cloister, false, false):     2,
 	newTile(City, City, City, City, NilStructure, true, true):   1,

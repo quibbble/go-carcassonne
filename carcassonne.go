@@ -83,20 +83,31 @@ func (c *Carcassonne) Do(action bg.BoardGameAction) error {
 	return nil
 }
 
-func (c *Carcassonne) GetSnapshot(team string) (bg.BoardGameSnapshot, error) {
-	return bg.BoardGameSnapshot{
-		Turn:    c.state.turn,
-		Teams:   c.state.teams,
-		Winners: c.state.winners,
-		MoreData: CarcassonneSnapshotDetails{
-			PlayTile:       c.state.playTile,
-			LastPlacedTile: c.state.lastPlacedTile,
-			Board:          c.state.board.board,
-			BoardTokens:    c.state.boardTokens,
-			Tokens:         c.state.tokens,
-			Scores:         c.state.scores,
-			TilesRemaining: len(c.state.deck.tiles),
-		},
-		Actions: c.actions,
+func (c *Carcassonne) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error) {
+	if len(team) > 1 {
+		return nil, &bgerr.Error{
+			Err:    fmt.Errorf("get snapshot requires zero or one team"),
+			Status: bgerr.StatusTooManyTeams,
+		}
+	}
+	details := CarcassonneSnapshotDetails{
+		PlayTile:       c.state.playTile,
+		LastPlacedTile: c.state.lastPlacedTile,
+		Board:          c.state.board.board,
+		BoardTokens:    c.state.boardTokens,
+		Tokens:         c.state.tokens,
+		Scores:         c.state.scores,
+		TilesRemaining: len(c.state.deck.tiles),
+	}
+	if len(team) == 1 && c.state.turn != team[0] {
+		details.PlayTile = nil
+		details.LastPlacedTile = nil
+	}
+	return &bg.BoardGameSnapshot{
+		Turn:     c.state.turn,
+		Teams:    c.state.teams,
+		Winners:  c.state.winners,
+		MoreData: details,
+		Actions:  c.actions,
 	}, nil
 }

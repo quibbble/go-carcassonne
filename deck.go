@@ -10,17 +10,17 @@ type deck struct {
 }
 
 func newDeck() *deck {
-	tiles := make([]*tile, 0)
-	for tile, num := range Tiles {
+	d := make([]*tile, 0)
+	for tile, num := range tiles {
 		for i := 0; i < num; i++ {
-			tiles = append(tiles, tile.copy())
+			d = append(d, tile.copy())
 		}
 	}
-	deck := &deck{
-		tiles: tiles,
+	result := &deck{
+		tiles: d,
 	}
-	deck.Shuffle()
-	return deck
+	result.Shuffle()
+	return result
 }
 
 func (d *deck) Shuffle() {
