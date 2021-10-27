@@ -21,7 +21,7 @@ type Carcassonne struct {
 	random  *rand.Rand
 }
 
-func NewCarcassonne(options bg.BoardGameOptions) (*Carcassonne, error) {
+func NewCarcassonneWithSeed(options bg.BoardGameOptions, seed int64) (*Carcassonne, error) {
 	if len(options.Teams) < minTeams {
 		return nil, &bgerr.Error{
 			Err:    fmt.Errorf("at least %d teams required to create a game of %s", minTeams, key),
@@ -33,7 +33,6 @@ func NewCarcassonne(options bg.BoardGameOptions) (*Carcassonne, error) {
 			Status: bgerr.StatusTooManyTeams,
 		}
 	}
-	seed := time.Now().UnixNano()
 	random := rand.New(rand.NewSource(seed))
 	return &Carcassonne{
 		state:   newState(options.Teams, random),
@@ -41,6 +40,10 @@ func NewCarcassonne(options bg.BoardGameOptions) (*Carcassonne, error) {
 		seed:    seed,
 		random:  random,
 	}, nil
+}
+
+func NewCarcassonne(options bg.BoardGameOptions) (*Carcassonne, error) {
+	return NewCarcassonneWithSeed(options, time.Now().UnixNano())
 }
 
 func (c *Carcassonne) Do(action bg.BoardGameAction) error {

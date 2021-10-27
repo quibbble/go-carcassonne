@@ -3,7 +3,6 @@ package go_carcassonne
 import (
 	bg "github.com/quibbble/go-boardgame"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
 	"testing"
 )
 
@@ -104,16 +103,13 @@ func Test_Carcassonne(t *testing.T) {
 }
 
 func Test_Carcassonne_Undo(t *testing.T) {
-	seed := int64(123)
-	random := rand.New(rand.NewSource(seed))
-	carcassonne := &Carcassonne{
-		state:   newState([]string{TeamA, TeamB}, random),
-		actions: make([]*bg.BoardGameAction, 0),
-		random:  random,
-		seed:    seed,
+	carcassonne, err := NewCarcassonneWithSeed(bg.BoardGameOptions{Teams: []string{TeamA, TeamB}}, 123)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
 	}
 
-	err := carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(bg.BoardGameAction{
 		Team:       TeamA,
 		ActionType: ActionPlaceTile,
 		MoreDetails: PlaceTileActionDetails{
