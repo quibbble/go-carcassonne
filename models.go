@@ -2,11 +2,10 @@ package go_carcassonne
 
 // Action types
 const (
-	PlaceTile       = "PlaceTile"
-	PlaceToken      = "PlaceToken"
-	RotateTileRight = "RotateTileRight"
-	RotateTileLeft  = "RotateTileLeft"
-	Reset           = "Reset"
+	ActionPlaceTile       = "PlaceTile"
+	ActionPlaceToken      = "PlaceToken"
+	ActionRotateTileRight = "RotateTileRight"
+	ActionRotateTileLeft  = "RotateTileLeft"
 )
 
 // PlaceTileActionDetails is the action details for placing a tile
@@ -48,30 +47,35 @@ type CarcassonneSnapshotDetails struct {
 // startTile the tile at 0,0 at the start of the game
 var startTile = newTile(City, Road, Farm, Road, NilStructure, false, false)
 
-// tiles are all the tiles in that will be placed
-var tiles = map[*tile]int{
-	newTile(Farm, Farm, Farm, Farm, Cloister, false, false):     4,
-	newTile(Farm, Farm, Road, Farm, Cloister, false, false):     2,
-	newTile(City, City, City, City, NilStructure, true, true):   1,
-	newTile(City, City, Farm, City, NilStructure, true, false):  3,
-	newTile(City, City, Farm, City, NilStructure, true, true):   1,
-	newTile(City, City, Road, City, NilStructure, true, false):  1,
-	newTile(City, City, Road, City, NilStructure, true, true):   2,
-	newTile(City, Farm, Farm, City, NilStructure, true, false):  3,
-	newTile(City, Farm, Farm, City, NilStructure, true, true):   2,
-	newTile(City, Road, Road, City, NilStructure, true, false):  3,
-	newTile(City, Road, Road, City, NilStructure, true, true):   2,
-	newTile(Farm, City, Farm, City, NilStructure, true, false):  1,
-	newTile(Farm, City, Farm, City, NilStructure, true, true):   2,
-	newTile(City, Farm, Farm, City, NilStructure, false, false): 2,
-	newTile(City, Farm, City, Farm, NilStructure, false, false): 3,
-	newTile(City, Farm, Farm, Farm, NilStructure, false, false): 5,
-	newTile(City, Farm, Road, Road, NilStructure, false, false): 3,
-	newTile(City, Road, Road, Farm, NilStructure, false, false): 3,
-	newTile(City, Road, Road, Road, NilStructure, false, false): 3,
-	newTile(City, Road, Farm, Road, NilStructure, false, false): 3,
-	newTile(Road, Farm, Road, Farm, NilStructure, false, false): 8,
-	newTile(Farm, Farm, Road, Road, NilStructure, false, false): 9,
-	newTile(Farm, Road, Road, Road, NilStructure, false, false): 4,
-	newTile(Road, Road, Road, Road, NilStructure, false, false): 1,
+type tileAmounts struct {
+	tile   *tile
+	amount int
+}
+
+// tiles are all the tiles that will be placed
+var tiles = []*tileAmounts{
+	{tile: newTile(Farm, Farm, Farm, Farm, Cloister, false, false), amount: 4},
+	{tile: newTile(Farm, Farm, Road, Farm, Cloister, false, false), amount: 2},
+	{tile: newTile(City, City, City, City, NilStructure, true, true), amount: 1},
+	{tile: newTile(City, City, Farm, City, NilStructure, true, false), amount: 3},
+	{tile: newTile(City, City, Farm, City, NilStructure, true, true), amount: 1},
+	{tile: newTile(City, City, Road, City, NilStructure, true, false), amount: 1},
+	{tile: newTile(City, City, Road, City, NilStructure, true, true), amount: 2},
+	{tile: newTile(City, Farm, Farm, City, NilStructure, true, false), amount: 3},
+	{tile: newTile(City, Farm, Farm, City, NilStructure, true, true), amount: 2},
+	{tile: newTile(City, Road, Road, City, NilStructure, true, false), amount: 3},
+	{tile: newTile(City, Road, Road, City, NilStructure, true, true), amount: 2},
+	{tile: newTile(Farm, City, Farm, City, NilStructure, true, false), amount: 1},
+	{tile: newTile(Farm, City, Farm, City, NilStructure, true, true), amount: 2},
+	{tile: newTile(City, Farm, Farm, City, NilStructure, false, false), amount: 2},
+	{tile: newTile(City, Farm, City, Farm, NilStructure, false, false), amount: 3},
+	{tile: newTile(City, Farm, Farm, Farm, NilStructure, false, false), amount: 5},
+	{tile: newTile(City, Farm, Road, Road, NilStructure, false, false), amount: 3},
+	{tile: newTile(City, Road, Road, Farm, NilStructure, false, false), amount: 3},
+	{tile: newTile(City, Road, Road, Road, NilStructure, false, false), amount: 3},
+	{tile: newTile(City, Road, Farm, Road, NilStructure, false, false), amount: 3},
+	{tile: newTile(Road, Farm, Road, Farm, NilStructure, false, false), amount: 8},
+	{tile: newTile(Farm, Farm, Road, Road, NilStructure, false, false), amount: 9},
+	{tile: newTile(Farm, Road, Road, Road, NilStructure, false, false), amount: 4},
+	{tile: newTile(Road, Road, Road, Road, NilStructure, false, false), amount: 1},
 }

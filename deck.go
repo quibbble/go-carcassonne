@@ -6,18 +6,20 @@ import (
 )
 
 type deck struct {
-	tiles []*tile
+	tiles  []*tile
+	random *rand.Rand
 }
 
-func newDeck() *deck {
+func newDeck(random *rand.Rand) *deck {
 	d := make([]*tile, 0)
-	for tile, num := range tiles {
-		for i := 0; i < num; i++ {
-			d = append(d, tile.copy())
+	for _, tileAmount := range tiles {
+		for i := 0; i < tileAmount.amount; i++ {
+			d = append(d, tileAmount.tile.copy())
 		}
 	}
 	result := &deck{
-		tiles: d,
+		tiles:  d,
+		random: random,
 	}
 	result.Shuffle()
 	return result
@@ -25,7 +27,7 @@ func newDeck() *deck {
 
 func (d *deck) Shuffle() {
 	for i := 0; i < len(d.tiles); i++ {
-		r := rand.Intn(len(d.tiles))
+		r := d.random.Intn(len(d.tiles))
 		if i != r {
 			d.tiles[r], d.tiles[i] = d.tiles[i], d.tiles[r]
 		}

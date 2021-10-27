@@ -5,6 +5,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 	bg "github.com/quibbble/go-boardgame"
 	"github.com/quibbble/go-boardgame/pkg/bgerr"
+	"math/rand"
+	"time"
 )
 
 const (
@@ -15,6 +17,8 @@ const (
 type Carcassonne struct {
 	state   *state
 	actions []*bg.BoardGameAction
+	seed    int64
+	random  *rand.Rand
 }
 
 func NewCarcassonne(options bg.BoardGameOptions) (*Carcassonne, error) {
@@ -29,23 +33,27 @@ func NewCarcassonne(options bg.BoardGameOptions) (*Carcassonne, error) {
 			Status: bgerr.StatusTooManyTeams,
 		}
 	}
+	seed := time.Now().UnixNano()
+	random := rand.New(rand.NewSource(seed))
 	return &Carcassonne{
-		state:   newState(options.Teams),
+		state:   newState(options.Teams, random),
 		actions: make([]*bg.BoardGameAction, 0),
+		seed:    seed,
+		random:  random,
 	}, nil
 }
 
 func (c *Carcassonne) Do(action bg.BoardGameAction) error {
 	switch action.ActionType {
-	case RotateTileRight:
+	case ActionRotateTileRight:
 		if err := c.state.RotateTileRight(action.Team); err != nil {
 			return err
 		}
-	case RotateTileLeft:
+	case ActionRotateTileLeft:
 		if err := c.state.RotateTileLeft(action.Team); err != nil {
 			return err
 		}
-	case PlaceTile:
+	case ActionPlaceTile:
 		var details PlaceTileActionDetails
 		if err := mapstructure.Decode(action.MoreDetails, &details); err != nil {
 			return &bgerr.Error{
@@ -59,7 +67,7 @@ func (c *Carcassonne) Do(action bg.BoardGameAction) error {
 		}
 		action.MoreDetails = details
 		c.actions = append(c.actions, &action)
-	case PlaceToken:
+	case ActionPlaceToken:
 		var details PlaceTokenActionDetails
 		if err := mapstructure.Decode(action.MoreDetails, &details); err != nil {
 			return &bgerr.Error{
@@ -71,9 +79,35 @@ func (c *Carcassonne) Do(action bg.BoardGameAction) error {
 			return err
 		}
 		c.actions = append(c.actions, &action)
-	case Reset:
-		c.state = newState(c.state.teams)
+	case bg.ActionReset:
+		seed := time.Now().UnixNano()
+		random := rand.New(rand.NewSource(seed))
+		c.state = newState(c.state.teams, random)
 		c.actions = make([]*bg.BoardGameAction, 0)
+		c.seed = seed
+		c.random = random
+	case bg.ActionUndo:
+		if len(c.actions) > 0 {
+			random := rand.New(rand.NewSource(c.seed))
+			undo := Carcassonne{
+				state:   newState(c.state.teams, random),
+				actions: make([]*bg.BoardGameAction, 0),
+				seed:    c.seed,
+				random:  random,
+			}
+			for _, a := range c.actions[:len(c.actions)-1] {
+				if err := undo.Do(*a); err != nil {
+					return err
+				}
+			}
+			c.state = undo.state
+			c.actions = undo.actions
+		} else {
+			return &bgerr.Error{
+				Err:    fmt.Errorf("no actions to undo"),
+				Status: bgerr.StatusInvalidAction,
+			}
+		}
 	default:
 		return &bgerr.Error{
 			Err:    fmt.Errorf("cannot process action type %s", action.ActionType),

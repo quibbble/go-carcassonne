@@ -21,17 +21,17 @@ type state struct {
 	deck           *deck
 }
 
-func newState(teams []string) *state {
+func newState(teams []string, random *rand.Rand) *state {
 	tokens := make(map[string]int)
 	scores := make(map[string]int)
 	for _, team := range teams {
 		tokens[team] = 7
 		scores[team] = 0
 	}
-	deck := newDeck()
+	deck := newDeck(random)
 	playTile, _ := deck.Draw()
 	return &state{
-		turn:           teams[rand.Intn(len(teams))],
+		turn:           teams[random.Intn(len(teams))],
 		teams:          teams,
 		winners:        make([]string, 0),
 		playTile:       playTile,
