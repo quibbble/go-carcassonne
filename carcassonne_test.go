@@ -4,6 +4,7 @@ import (
 	bg "github.com/quibbble/go-boardgame"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 const (
@@ -12,7 +13,9 @@ const (
 )
 
 func Test_Carcassonne(t *testing.T) {
-	carcassonne, err := NewCarcassonne(bg.BoardGameOptions{Teams: []string{TeamA, TeamB}})
+	carcassonne, err := NewCarcassonne(bg.BoardGameOptions{
+		Teams: []string{TeamA, TeamB},
+	}, time.Now().UnixNano())
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -103,7 +106,7 @@ func Test_Carcassonne(t *testing.T) {
 }
 
 func Test_Carcassonne_Undo(t *testing.T) {
-	carcassonne, err := NewCarcassonneWithSeed(bg.BoardGameOptions{Teams: []string{TeamA, TeamB}}, 123)
+	carcassonne, err := NewCarcassonne(bg.BoardGameOptions{Teams: []string{TeamA, TeamB}}, 123)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

@@ -18,10 +18,9 @@ type Carcassonne struct {
 	state   *state
 	actions []*bg.BoardGameAction
 	seed    int64
-	random  *rand.Rand
 }
 
-func NewCarcassonneWithSeed(options bg.BoardGameOptions, seed int64) (*Carcassonne, error) {
+func NewCarcassonne(options bg.BoardGameOptions, seed int64) (*Carcassonne, error) {
 	if len(options.Teams) < minTeams {
 		return nil, &bgerr.Error{
 			Err:    fmt.Errorf("at least %d teams required to create a game of %s", minTeams, key),
@@ -33,17 +32,11 @@ func NewCarcassonneWithSeed(options bg.BoardGameOptions, seed int64) (*Carcasson
 			Status: bgerr.StatusTooManyTeams,
 		}
 	}
-	random := rand.New(rand.NewSource(seed))
 	return &Carcassonne{
-		state:   newState(options.Teams, random),
+		state:   newState(options.Teams, rand.New(rand.NewSource(seed))),
 		actions: make([]*bg.BoardGameAction, 0),
 		seed:    seed,
-		random:  random,
 	}, nil
-}
-
-func NewCarcassonne(options bg.BoardGameOptions) (*Carcassonne, error) {
-	return NewCarcassonneWithSeed(options, time.Now().UnixNano())
 }
 
 func (c *Carcassonne) Do(action bg.BoardGameAction) error {
@@ -84,20 +77,12 @@ func (c *Carcassonne) Do(action bg.BoardGameAction) error {
 		c.actions = append(c.actions, &action)
 	case bg.ActionReset:
 		seed := time.Now().UnixNano()
-		random := rand.New(rand.NewSource(seed))
-		c.state = newState(c.state.teams, random)
+		c.state = newState(c.state.teams, rand.New(rand.NewSource(seed)))
 		c.actions = make([]*bg.BoardGameAction, 0)
 		c.seed = seed
-		c.random = random
 	case bg.ActionUndo:
 		if len(c.actions) > 0 {
-			random := rand.New(rand.NewSource(c.seed))
-			undo := Carcassonne{
-				state:   newState(c.state.teams, random),
-				actions: make([]*bg.BoardGameAction, 0),
-				seed:    c.seed,
-				random:  random,
-			}
+			undo, _ := NewCarcassonne(bg.BoardGameOptions{Teams: c.state.teams}, c.seed)
 			for _, a := range c.actions[:len(c.actions)-1] {
 				if err := undo.Do(*a); err != nil {
 					return err
@@ -147,4 +132,8 @@ func (c *Carcassonne) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error)
 		MoreData: details,
 		Actions:  c.actions,
 	}, nil
+}
+
+func (c *Carcassonne) GetSeed() int64 {
+	return c.seed
 }
