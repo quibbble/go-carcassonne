@@ -12,7 +12,7 @@ To play a game create a new Carcassonne instance:
 ```go
 game, err := NewCarcassonne(bg.BoardGameOptions{
     Teams: []string{"TeamA", "TeamB"} // must contain at least 2 and at most 5 teams
-})
+}, 123)
 ```
 
 To rotate the play tile (the tile about to be placed by the current team) do the following action:
