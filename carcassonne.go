@@ -125,11 +125,16 @@ func (c *Carcassonne) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error)
 		details.PlayTile = nil
 		details.LastPlacedTile = nil
 	}
+	var targets []*bg.BoardGameAction
+	if len(c.state.winners) == 0 && (len(team) == 0 || (len(team) == 1 && team[0] == c.state.turn)) {
+		targets = c.state.targets()
+	}
 	return &bg.BoardGameSnapshot{
 		Turn:     c.state.turn,
 		Teams:    c.state.teams,
 		Winners:  c.state.winners,
 		MoreData: details,
+		Targets:  targets,
 		Actions:  c.actions,
 	}, nil
 }

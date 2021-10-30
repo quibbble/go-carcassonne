@@ -353,6 +353,28 @@ func (b *board) tilesSurroundingCloister(x, y int) (int, error) {
 }
 
 func (b *board) playable(t *tile) bool {
+	emptySpaces := b.getEmptySpaces()
+	// go through empty spaces looking for at least one place the tile can be placed
+	copied := t.copy()
+	for i := 0; i < 4; i++ {
+		for _, emptySpace := range emptySpaces {
+			valid := true
+			for _, side := range Sides {
+				if emptySpace.adjacent[side] != nil && emptySpace.adjacent[side].Sides[AcrossSide[side]] != copied.Sides[side] {
+					valid = false
+				}
+			}
+			if valid {
+				return true
+			}
+		}
+		copied.RotateRight()
+	}
+	return false
+}
+
+// gets a list of empty spaces that are potential place locations
+func (b *board) getEmptySpaces() []*tile {
 	// go through board and get all empty spaces
 	emptySpaces := make(map[string]*tile)
 	for _, boardTile := range b.board {
@@ -392,17 +414,9 @@ func (b *board) playable(t *tile) bool {
 			}
 		}
 	}
-	// go through empty spaces looking for at least one place the tile can be placed
+	result := make([]*tile, 0)
 	for _, emptySpace := range emptySpaces {
-		valid := true
-		for _, side := range Sides {
-			if emptySpace.adjacent[side] != nil && emptySpace.adjacent[side].Sides[AcrossSide[side]] != t.Sides[side] {
-				valid = false
-			}
-		}
-		if valid {
-			return true
-		}
+		result = append(result, emptySpace)
 	}
-	return false
+	return result
 }

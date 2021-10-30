@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/mitchellh/mapstructure v1.4.2
-	github.com/quibbble/go-boardgame v0.0.0-20211028052557-fa979807a9f6
+	github.com/quibbble/go-boardgame v0.0.0-20211029172200-c06ae9d59eb1
 	github.com/stretchr/testify v1.7.0
 )
 

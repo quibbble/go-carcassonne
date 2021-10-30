@@ -2,6 +2,7 @@ package go_carcassonne
 
 import (
 	"fmt"
+	bg "github.com/quibbble/go-boardgame"
 	"github.com/quibbble/go-boardgame/pkg/bgerr"
 	"math/rand"
 	"sort"
@@ -117,6 +118,13 @@ func (s *state) PlaceTile(team string, x, y int) error {
 	}
 	s.lastPlacedTile = s.playTile
 	s.playTile = nil
+
+	// if there are no tokens to place or cannot place token anywhere skip place token action here
+	if s.tokens[s.turn] == 0 || len(s.targets()) <= 1 {
+		if err := s.PlaceToken(s.turn, true, 0, 0, "", ""); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -535,6 +543,147 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 		s.winners = winners
 	}
 	return nil
+}
+
+func (s *state) targets() []*bg.BoardGameAction {
+	targets := make([]*bg.BoardGameAction, 0)
+	if s.playTile != nil {
+		// add rotating tile as valid targets
+		targets = append(targets, &bg.BoardGameAction{
+			Team:       s.turn,
+			ActionType: ActionRotateTileLeft,
+		}, &bg.BoardGameAction{
+			Team:       s.turn,
+			ActionType: ActionRotateTileRight,
+		})
+		// find all valid places to play tile
+		emptySpaces := s.board.getEmptySpaces()
+		for _, emptySpace := range emptySpaces {
+			valid := true
+			for _, side := range Sides {
+				if emptySpace.adjacent[side] != nil && emptySpace.adjacent[side].Sides[AcrossSide[side]] != s.playTile.Sides[side] {
+					valid = false
+				}
+			}
+			if valid {
+				targets = append(targets, &bg.BoardGameAction{
+					Team:       s.turn,
+					ActionType: ActionPlaceTile,
+					MoreDetails: PlaceTileActionDetails{
+						X: emptySpace.X,
+						Y: emptySpace.Y,
+					},
+				})
+			}
+		}
+	} else {
+		// find all valid places to play token
+		targets = append(targets, &bg.BoardGameAction{
+			Team:       s.turn,
+			ActionType: ActionPlaceToken,
+			MoreDetails: PlaceTokenActionDetails{
+				Pass: true,
+			},
+		})
+		if s.lastPlacedTile.Center == Cloister {
+			targets = append(targets, &bg.BoardGameAction{
+				Team:       s.turn,
+				ActionType: ActionPlaceToken,
+				MoreDetails: PlaceTokenActionDetails{
+					X:    s.lastPlacedTile.X,
+					Y:    s.lastPlacedTile.Y,
+					Type: Monk,
+				},
+			})
+		}
+		for _, side := range Sides {
+			switch s.lastPlacedTile.Sides[side] {
+			case Road:
+				// check if road is already claimed
+				road, _ := s.board.generateRoad(s.lastPlacedTile.X, s.lastPlacedTile.Y, side)
+				if len(tokensInStructure(s.boardTokens, road)) == 0 {
+					targets = append(targets, &bg.BoardGameAction{
+						Team:       s.turn,
+						ActionType: ActionPlaceToken,
+						MoreDetails: PlaceTokenActionDetails{
+							X:    s.lastPlacedTile.X,
+							Y:    s.lastPlacedTile.Y,
+							Type: Thief,
+							Side: side,
+						},
+					})
+				}
+				// check if farmland A is claimed
+				farm, _ := s.board.generateFarm(s.lastPlacedTile.X, s.lastPlacedTile.Y, sideToFarmSide(side, FarmNotchA))
+				if len(tokensInStructure(s.boardTokens, farm)) == 0 {
+					targets = append(targets, &bg.BoardGameAction{
+						Team:       s.turn,
+						ActionType: ActionPlaceToken,
+						MoreDetails: PlaceTokenActionDetails{
+							X:    s.lastPlacedTile.X,
+							Y:    s.lastPlacedTile.Y,
+							Type: Farmer,
+							Side: sideToFarmSide(side, FarmNotchA),
+						},
+					})
+				}
+				// check if farmland B is claimed
+				farm, _ = s.board.generateFarm(s.lastPlacedTile.X, s.lastPlacedTile.Y, sideToFarmSide(side, FarmNotchB))
+				if len(tokensInStructure(s.boardTokens, farm)) == 0 {
+					targets = append(targets, &bg.BoardGameAction{
+						Team:       s.turn,
+						ActionType: ActionPlaceToken,
+						MoreDetails: PlaceTokenActionDetails{
+							X:    s.lastPlacedTile.X,
+							Y:    s.lastPlacedTile.Y,
+							Type: Farmer,
+							Side: sideToFarmSide(side, FarmNotchB),
+						},
+					})
+				}
+			case City:
+				// check if city is already claimed
+				city, _ := s.board.generateCity(s.lastPlacedTile.X, s.lastPlacedTile.Y, side)
+				if len(tokensInStructure(s.boardTokens, city)) == 0 {
+					targets = append(targets, &bg.BoardGameAction{
+						Team:       s.turn,
+						ActionType: ActionPlaceToken,
+						MoreDetails: PlaceTokenActionDetails{
+							X:    s.lastPlacedTile.X,
+							Y:    s.lastPlacedTile.Y,
+							Type: Knight,
+							Side: side,
+						},
+					})
+				}
+			case Farm:
+				// check if farmland is claimed
+				farm, _ := s.board.generateFarm(s.lastPlacedTile.X, s.lastPlacedTile.Y, sideToFarmSide(side, FarmNotchA))
+				if len(tokensInStructure(s.boardTokens, farm)) == 0 {
+					targets = append(targets, &bg.BoardGameAction{
+						Team:       s.turn,
+						ActionType: ActionPlaceToken,
+						MoreDetails: PlaceTokenActionDetails{
+							X:    s.lastPlacedTile.X,
+							Y:    s.lastPlacedTile.Y,
+							Type: Farmer,
+							Side: sideToFarmSide(side, FarmNotchA),
+						},
+					}, &bg.BoardGameAction{
+						Team:       s.turn,
+						ActionType: ActionPlaceToken,
+						MoreDetails: PlaceTokenActionDetails{
+							X:    s.lastPlacedTile.X,
+							Y:    s.lastPlacedTile.Y,
+							Type: Farmer,
+							Side: sideToFarmSide(side, FarmNotchB),
+						},
+					})
+				}
+			}
+		}
+	}
+	return targets
 }
 
 // get the tokens that fall in the structure
