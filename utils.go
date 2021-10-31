@@ -8,3 +8,19 @@ func contains(items []string, item string) bool {
 	}
 	return false
 }
+
+func indexOf(items []string, item string) int {
+	for index, it := range items {
+		if it == item {
+			return index
+		}
+	}
+	return -1
+}
+
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}

@@ -10,14 +10,16 @@ Check out [quibbble.com](https://quibbble.com/annex) if you wish to view and pla
 
 To play a game create a new Carcassonne instance:
 ```go
-game, err := NewCarcassonne(bg.BoardGameOptions{
+builder := Builder{}
+game, err := builder.Create(&bg.BoardGameOptions{
     Teams: []string{"TeamA", "TeamB"} // must contain at least 2 and at most 5 teams
-}, 123)
+    Seed: 123                         // seed used to generate deterministic randomness
+})
 ```
 
 To rotate the play tile (the tile about to be placed by the current team) do the following action:
 ```go
-err := game.Do(bg.BoardGameAction{
+err := game.Do(&bg.BoardGameAction{
     Team: "TeamA",
     ActionType: "RotateTileRight", // can also be "RotateTileLeft"
 })
@@ -25,7 +27,7 @@ err := game.Do(bg.BoardGameAction{
 
 To place the play tile on the board do the following action:
 ```go
-err := game.Do(bg.BoardGameAction{
+err := game.Do(&bg.BoardGameAction{
     Team: "TeamA",
     ActionType: "PlaceTile",
     MoreDetails: PlaceTileActionDetails{
@@ -37,7 +39,7 @@ err := game.Do(bg.BoardGameAction{
 
 To place a token on the last placed tile do the following action:
 ```go
-err := game.Do(bg.BoardGameAction{
+err := game.Do(&bg.BoardGameAction{
     Team: "TeamA",
     ActionType: "PlaceToken",
     MoreDetails: PlaceTokenActionDetails{

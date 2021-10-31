@@ -13,9 +13,10 @@ const (
 )
 
 func Test_Carcassonne(t *testing.T) {
-	carcassonne, err := NewCarcassonne(bg.BoardGameOptions{
+	carcassonne, err := NewCarcassonne(&bg.BoardGameOptions{
 		Teams: []string{TeamA, TeamB},
-	}, time.Now().UnixNano())
+		Seed:  time.Now().UnixNano(),
+	})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -26,7 +27,7 @@ func Test_Carcassonne(t *testing.T) {
 	// place all road tile to right of start tile
 	carcassonne.state.playTile = newTile(Road, Road, Road, Road, NilStructure, false, false)
 	carcassonne.state.turn = TeamA
-	err = carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(&bg.BoardGameAction{
 		Team:       TeamA,
 		ActionType: ActionPlaceTile,
 		MoreDetails: PlaceTileActionDetails{
@@ -42,7 +43,7 @@ func Test_Carcassonne(t *testing.T) {
 	assert.Equal(t, 2, len(carcassonne.state.board.board), "board missing last placed tile")
 
 	// place token in left B side of farmland
-	err = carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(&bg.BoardGameAction{
 		Team:       TeamA,
 		ActionType: ActionPlaceToken,
 		MoreDetails: PlaceTokenActionDetails{
@@ -64,7 +65,7 @@ func Test_Carcassonne(t *testing.T) {
 
 	// place tile to left of start tile completing a road segment
 	carcassonne.state.playTile = newTile(Road, Road, Farm, Road, NilStructure, false, false)
-	err = carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(&bg.BoardGameAction{
 		Team:       TeamB,
 		ActionType: ActionPlaceTile,
 		MoreDetails: PlaceTileActionDetails{
@@ -80,7 +81,7 @@ func Test_Carcassonne(t *testing.T) {
 	assert.Equal(t, 3, len(carcassonne.state.board.board), "board missing last place tile")
 
 	// claim the completed road by placing thief on right side of tile
-	err = carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(&bg.BoardGameAction{
 		Team:       TeamB,
 		ActionType: ActionPlaceToken,
 		MoreDetails: PlaceTokenActionDetails{
@@ -106,13 +107,13 @@ func Test_Carcassonne(t *testing.T) {
 }
 
 func Test_Carcassonne_Undo(t *testing.T) {
-	carcassonne, err := NewCarcassonne(bg.BoardGameOptions{Teams: []string{TeamA, TeamB}}, 123)
+	carcassonne, err := NewCarcassonne(&bg.BoardGameOptions{Teams: []string{TeamA, TeamB}, Seed: 123})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	err = carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(&bg.BoardGameAction{
 		Team:       TeamA,
 		ActionType: ActionPlaceTile,
 		MoreDetails: PlaceTileActionDetails{
@@ -127,7 +128,7 @@ func Test_Carcassonne_Undo(t *testing.T) {
 
 	assert.Equal(t, 2, len(carcassonne.state.board.board), "board missing last placed tile")
 
-	err = carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(&bg.BoardGameAction{
 		Team:       TeamA,
 		ActionType: ActionPlaceToken,
 		MoreDetails: PlaceTokenActionDetails{
@@ -145,7 +146,7 @@ func Test_Carcassonne_Undo(t *testing.T) {
 
 	assert.Equal(t, 1, len(carcassonne.state.boardTokens), "missing placed token")
 
-	err = carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(&bg.BoardGameAction{
 		ActionType: bg.ActionUndo,
 	})
 	if err != nil {
@@ -156,7 +157,7 @@ func Test_Carcassonne_Undo(t *testing.T) {
 	assert.Equal(t, 0, len(carcassonne.state.boardTokens), "placed token should have been removed")
 	assert.Equal(t, 2, len(carcassonne.state.board.board), "tile should not have been removed")
 
-	err = carcassonne.Do(bg.BoardGameAction{
+	err = carcassonne.Do(&bg.BoardGameAction{
 		ActionType: bg.ActionUndo,
 	})
 	if err != nil {

@@ -8,6 +8,10 @@ github.com/quibbble/go-boardgame v0.0.0-20211028052557-fa979807a9f6 h1:F3TCEvWfw
 github.com/quibbble/go-boardgame v0.0.0-20211028052557-fa979807a9f6/go.mod h1:igDQbBQiA1FHxqJQA0hOObrHS9iX0ed3o3cUahzccew=
 github.com/quibbble/go-boardgame v0.0.0-20211029172200-c06ae9d59eb1 h1:lSrK24mUrlQ5fqxFm/YDs+0J8mvBilXyJ1kQOstRYt8=
 github.com/quibbble/go-boardgame v0.0.0-20211029172200-c06ae9d59eb1/go.mod h1:igDQbBQiA1FHxqJQA0hOObrHS9iX0ed3o3cUahzccew=
+github.com/quibbble/go-boardgame v0.0.0-20211031212729-b94a5108befc h1:DynK6AgfuFjPI69+cHZNg2fFrUpbga+WntRWS1TLd0s=
+github.com/quibbble/go-boardgame v0.0.0-20211031212729-b94a5108befc/go.mod h1:igDQbBQiA1FHxqJQA0hOObrHS9iX0ed3o3cUahzccew=
+github.com/quibbble/go-boardgame v0.0.0-20211031225229-58411ad79c47 h1:qv7Xm+Efu1cgSyuqsUT+Pv0XPE5lukyZo17UIfEt55E=
+github.com/quibbble/go-boardgame v0.0.0-20211031225229-58411ad79c47/go.mod h1:igDQbBQiA1FHxqJQA0hOObrHS9iX0ed3o3cUahzccew=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
