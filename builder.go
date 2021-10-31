@@ -26,8 +26,8 @@ func (b *Builder) CreateAdvanced(options *bg.BoardGameOptions) (bg.AdvancedBoard
 func (b *Builder) Load(teams []string, notation string) (bg.AdvancedBoardGame, error) {
 	// split into three - number teams:seed:actions
 	splitOne := strings.Split(notation, ":")
-	if len(splitOne) != 3 {
-		return nil, loadFailure(fmt.Errorf("got %d but wanted %d fields in when decoding carcassonne", len(splitOne), 3))
+	if len(splitOne) != 4 {
+		return nil, loadFailure(fmt.Errorf("got %d but wanted %d fields in when decoding carcassonne", len(splitOne), 4))
 	}
 	numberTeams, err := strconv.Atoi(splitOne[0])
 	if err != nil {
@@ -48,7 +48,7 @@ func (b *Builder) Load(teams []string, notation string) (bg.AdvancedBoardGame, e
 		return nil, loadFailure(err)
 	}
 	// split actions - action;action;action;...
-	splitTwo := strings.Split(splitOne[2], ";")
+	splitTwo := strings.Split(splitOne[3], ";")
 	for _, action := range splitTwo {
 		if action == "" {
 			break

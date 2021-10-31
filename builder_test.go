@@ -70,52 +70,52 @@ func Test_Builder_Notations(t *testing.T) {
 		},
 		{
 			name:        "empty values should error",
-			notation:    "::",
+			notation:    ":::",
 			shouldError: true,
 		},
 		{
 			name:        "only number of teams should error",
-			notation:    "2::",
+			notation:    "2:::",
 			shouldError: true,
 		},
 		{
 			name:        "only seed should error",
-			notation:    ":123:",
+			notation:    ":123::",
 			shouldError: true,
 		},
 		{
 			name:        "number of teams string should error",
-			notation:    "A:123:",
+			notation:    "A:123::",
 			shouldError: true,
 		},
 		{
 			name:        "seed string should error",
-			notation:    "2:A:",
+			notation:    "2:A::",
 			shouldError: true,
 		},
 		{
 			name:        "game with no actions should succeed",
-			notation:    "2:123:",
+			notation:    "2:123::",
 			shouldError: false,
 		},
 		{
 			name:        "game with incorrect action should error",
-			notation:    "2:123:A;",
+			notation:    "2:123::A;",
 			shouldError: true,
 		},
 		{
 			name:        "game with invalid player index should error",
-			notation:    "2:123:9,2;",
+			notation:    "2:123::9,2;",
 			shouldError: true,
 		},
 		{
 			name:        "game with invalid action number should error",
-			notation:    "2:123:0,5;",
+			notation:    "2:123::0,5;",
 			shouldError: true,
 		},
 		{
 			name:        "game with rotate tile right action should succeed",
-			notation:    "2:123:0,2;",
+			notation:    "2:123::0,2;",
 			shouldError: false,
 		},
 	}

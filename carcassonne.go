@@ -164,7 +164,8 @@ func (c *Carcassonne) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error)
 }
 
 func (c *Carcassonne) GetNotation() string {
-	notation := fmt.Sprintf("%d:%d:", len(c.state.teams), c.seed)
+	// extra colon is left for MoreOptions which may be utilized in future additions
+	notation := fmt.Sprintf("%d:%d::", len(c.state.teams), c.seed)
 	for _, action := range c.actions {
 		base := fmt.Sprintf("%d,%d", indexOf(c.state.teams, action.Team), notationActionToInt[action.ActionType])
 		switch action.ActionType {

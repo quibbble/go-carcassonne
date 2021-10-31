@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+// Notation - "'number of teams':'seed':'MoreOptions':'team index','action type number','details','details';..."
+
 var (
 	notationActionToInt    = map[string]int{ActionPlaceTile: 0, ActionPlaceToken: 1, ActionRotateTileRight: 2, ActionRotateTileLeft: 3}
 	notationIntToAction    = map[string]string{"0": ActionPlaceTile, "1": ActionPlaceToken, "2": ActionRotateTileRight, "3": ActionRotateTileLeft}
