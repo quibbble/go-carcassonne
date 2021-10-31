@@ -84,6 +84,12 @@ func (c *Carcassonne) Do(action bg.BoardGameAction) error {
 		if len(c.actions) > 0 {
 			undo, _ := NewCarcassonne(bg.BoardGameOptions{Teams: c.state.teams}, c.seed)
 			for _, a := range c.actions[:len(c.actions)-1] {
+				// make sure play tile rotation is correct
+				if a.ActionType == ActionPlaceTile {
+					var details PlaceTileActionDetails
+					_ = mapstructure.Decode(action.MoreDetails, &details)
+					undo.state.playTile = details.Tile
+				}
 				if err := undo.Do(*a); err != nil {
 					return err
 				}
