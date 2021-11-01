@@ -24,7 +24,7 @@ func (b *Builder) CreateAdvanced(options *bg.BoardGameOptions) (bg.AdvancedBoard
 }
 
 func (b *Builder) Load(teams []string, notation string) (bg.AdvancedBoardGame, error) {
-	// split into three - number teams:seed:actions
+	// split into four - number teams:seed:options:actions
 	splitOne := strings.Split(notation, ":")
 	if len(splitOne) != 4 {
 		return nil, loadFailure(fmt.Errorf("got %d but wanted %d fields in when decoding", len(splitOne), 4))
