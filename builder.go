@@ -15,10 +15,6 @@ func (b *Builder) Create(options *bg.BoardGameOptions) (bg.BoardGame, error) {
 	return NewCarcassonne(options)
 }
 
-func (b *Builder) Key() string {
-	return key
-}
-
 func (b *Builder) CreateWithNotation(options *bg.BoardGameOptions) (bg.BoardGameWithNotation, error) {
 	return NewCarcassonne(options)
 }
@@ -91,4 +87,8 @@ func (b *Builder) Load(teams []string, notation string) (bg.BoardGameWithNotatio
 		}
 	}
 	return game, nil
+}
+
+func (b *Builder) Key() string {
+	return key
 }
