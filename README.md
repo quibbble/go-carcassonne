@@ -12,8 +12,8 @@ To play a game create a new Carcassonne instance:
 ```go
 builder := Builder{}
 game, err := builder.Create(&bg.BoardGameOptions{
-    Teams: []string{"TeamA", "TeamB"} // must contain at least 2 and at most 5 teams
-    Seed: 123                         // seed used to generate deterministic randomness
+    Teams: []string{"TeamA", "TeamB"}, // must contain at least 2 and at most 5 teams
+    Seed: 123,                         // seed used to generate deterministic randomness
 })
 ```
 

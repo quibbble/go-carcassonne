@@ -27,7 +27,7 @@ func (b *Builder) Load(teams []string, notation string) (bg.AdvancedBoardGame, e
 	// split into three - number teams:seed:actions
 	splitOne := strings.Split(notation, ":")
 	if len(splitOne) != 4 {
-		return nil, loadFailure(fmt.Errorf("got %d but wanted %d fields in when decoding carcassonne", len(splitOne), 4))
+		return nil, loadFailure(fmt.Errorf("got %d but wanted %d fields in when decoding", len(splitOne), 4))
 	}
 	numberTeams, err := strconv.Atoi(splitOne[0])
 	if err != nil {
