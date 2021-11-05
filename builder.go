@@ -34,7 +34,7 @@ func (b *Builder) Load(game *bgn.Game) (bg.BoardGameWithBGN, error) {
 		return nil, loadFailure(fmt.Errorf("missing seed tag"))
 	}
 	seed, err := strconv.Atoi(seedStr)
-	if !ok {
+	if err != nil {
 		return nil, loadFailure(err)
 	}
 	g, err := b.CreateWithBGN(&bg.BoardGameOptions{
