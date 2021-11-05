@@ -177,10 +177,11 @@ func (c *Carcassonne) GetBGN() *bgn.Game {
 			TeamIndex: indexOf(c.state.teams, action.Team),
 			ActionKey: rune(actionToNotation[action.ActionType][0]),
 		}
-		if action.ActionType == ActionPlaceTile {
+		switch action.ActionType {
+		case ActionPlaceTile:
 			details := action.MoreDetails.(PlaceTileActionDetails)
 			bgnAction.Details = details.encode()
-		} else if action.ActionType == ActionPlaceToken {
+		case ActionPlaceToken:
 			details := action.MoreDetails.(PlaceTokenActionDetails)
 			bgnAction.Details = details.encode()
 		}

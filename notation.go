@@ -20,7 +20,7 @@ var (
 )
 
 func (p *PlaceTileActionDetails) encode() []string {
-	return []string{fmt.Sprintf("%d", p.X), fmt.Sprintf("%d", p.Y)}
+	return []string{strconv.Itoa(p.X), strconv.Itoa(p.Y)}
 }
 
 func decodePlaceTileActionDetails(notation []string) (*PlaceTileActionDetails, error) {
@@ -43,13 +43,13 @@ func decodePlaceTileActionDetails(notation []string) (*PlaceTileActionDetails, e
 
 func (p *PlaceTokenActionDetails) encode() []string {
 	if p.Pass {
-		return []string{fmt.Sprintf("%s", boolToNotation[p.Pass])}
+		return []string{boolToNotation[p.Pass]}
 	} else if p.Type == Monk {
-		return []string{fmt.Sprintf("%s", boolToNotation[p.Pass]), fmt.Sprintf("%d", p.X), fmt.Sprintf("%d", p.Y), tokenToNotation[p.Type]}
+		return []string{boolToNotation[p.Pass], strconv.Itoa(p.X), strconv.Itoa(p.Y), tokenToNotation[p.Type]}
 	} else if p.Type == Farmer {
-		return []string{fmt.Sprintf("%s", boolToNotation[p.Pass]), fmt.Sprintf("%d", p.X), fmt.Sprintf("%d", p.Y), tokenToNotation[p.Type], farmSideToNotation[p.Side]}
+		return []string{boolToNotation[p.Pass], strconv.Itoa(p.X), strconv.Itoa(p.Y), tokenToNotation[p.Type], farmSideToNotation[p.Side]}
 	}
-	return []string{fmt.Sprintf("%s", boolToNotation[p.Pass]), fmt.Sprintf("%d", p.X), fmt.Sprintf("%d", p.Y), tokenToNotation[p.Type], sideToNotation[p.Side]}
+	return []string{boolToNotation[p.Pass], strconv.Itoa(p.X), strconv.Itoa(p.Y), tokenToNotation[p.Type], sideToNotation[p.Side]}
 }
 
 func decodePlaceTokenActionDetails(notation []string) (*PlaceTokenActionDetails, error) {
