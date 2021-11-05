@@ -2,15 +2,17 @@ package go_carcassonne
 
 import (
 	"encoding/json"
+	"fmt"
 	bg "github.com/quibbble/go-boardgame"
+	"github.com/quibbble/go-boardgame/pkg/bgn"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func Test_Builder_Notation(t *testing.T) {
+func Test_Builder_BGN(t *testing.T) {
 	builder := Builder{}
 	teams := []string{TeamA, TeamB}
-	carcassonne, err := builder.CreateAdvanced(&bg.BoardGameOptions{Teams: teams, Seed: 123})
+	carcassonne, err := builder.CreateWithBGN(&bg.BoardGameOptions{Teams: teams, Seed: 123})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -45,8 +47,9 @@ func Test_Builder_Notation(t *testing.T) {
 		t.FailNow()
 	}
 
-	notation := carcassonne.GetNotation()
-	carcassonneLoaded, err := builder.Load(teams, notation)
+	game := carcassonne.GetBGN()
+	fmt.Println(game.String())
+	carcassonneLoaded, err := builder.Load(game)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -58,72 +61,62 @@ func Test_Builder_Notation(t *testing.T) {
 }
 
 func Test_Builder_Notations(t *testing.T) {
+	tags := map[string]string{
+		"Game":  key,
+		"Teams": "TeamA, TeamB",
+		"Seed":  "123",
+	}
 	tests := []struct {
 		name        string
-		notation    string
+		bgn         *bgn.Game
 		shouldError bool
 	}{
 		{
 			name:        "empty string should error",
-			notation:    "",
+			bgn:         &bgn.Game{},
 			shouldError: true,
 		},
 		{
-			name:        "empty values should error",
-			notation:    ":::",
+			name: "missing seed should error",
+			bgn: &bgn.Game{
+				Tags: map[string]string{
+					"Game":  key,
+					"Teams": "TeamA, TeamB",
+				},
+			},
 			shouldError: true,
 		},
 		{
-			name:        "only number of teams should error",
-			notation:    "2:::",
-			shouldError: true,
-		},
-		{
-			name:        "only seed should error",
-			notation:    ":123::",
-			shouldError: true,
-		},
-		{
-			name:        "number of teams string should error",
-			notation:    "A:123::",
-			shouldError: true,
-		},
-		{
-			name:        "seed string should error",
-			notation:    "2:A::",
-			shouldError: true,
-		},
-		{
-			name:        "game with no actions should succeed",
-			notation:    "2:123::",
+			name: "should create a new game",
+			bgn: &bgn.Game{
+				Tags: tags,
+			},
 			shouldError: false,
 		},
 		{
-			name:        "game with incorrect action should error",
-			notation:    "2:123::A;",
-			shouldError: true,
-		},
-		{
-			name:        "game with invalid player index should error",
-			notation:    "2:123::9,2;",
-			shouldError: true,
-		},
-		{
-			name:        "game with invalid action number should error",
-			notation:    "2:123::0,5;",
-			shouldError: true,
-		},
-		{
-			name:        "game with rotate tile right action should succeed",
-			notation:    "2:123::0,2;",
+			name: "should create a new game and do actions",
+			bgn: &bgn.Game{
+				Tags: tags,
+				Actions: []bgn.Action{
+					{
+						TeamIndex: 0,
+						ActionKey: 'i',
+						Details:   []string{"1", "0"},
+					},
+					{
+						TeamIndex: 0,
+						ActionKey: 'o',
+						Details:   []string{"f", "1", "0", "f", "lb"},
+					},
+				},
+			},
 			shouldError: false,
 		},
 	}
 
 	builder := Builder{}
-	teams := []string{TeamA, TeamB}
 	for _, test := range tests {
-		_, err := builder.Load(teams, test.notation)
+		_, err := builder.Load(test.bgn)
 		assert.Equal(t, test.shouldError, err != nil, test.name)
 	}
 }

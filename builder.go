@@ -3,11 +3,12 @@ package go_carcassonne
 import (
 	"fmt"
 	bg "github.com/quibbble/go-boardgame"
+	"github.com/quibbble/go-boardgame/pkg/bgn"
 	"strconv"
 	"strings"
 )
 
-const key = "carcassonne"
+const key = "Carcassonne"
 
 type Builder struct{}
 
@@ -15,78 +16,67 @@ func (b *Builder) Create(options *bg.BoardGameOptions) (bg.BoardGame, error) {
 	return NewCarcassonne(options)
 }
 
-func (b *Builder) CreateWithNotation(options *bg.BoardGameOptions) (bg.BoardGameWithNotation, error) {
+func (b *Builder) CreateWithBGN(options *bg.BoardGameOptions) (bg.BoardGameWithBGN, error) {
 	return NewCarcassonne(options)
 }
 
-func (b *Builder) Load(teams []string, notation string) (bg.BoardGameWithNotation, error) {
-	// split into four - number teams:seed:options:actions
-	splitOne := strings.Split(notation, ":")
-	if len(splitOne) != 4 {
-		return nil, loadFailure(fmt.Errorf("got %d but wanted %d fields in when decoding", len(splitOne), 4))
+func (b *Builder) Load(game *bgn.Game) (bg.BoardGameWithBGN, error) {
+	if game.Tags["Game"] != key {
+		return nil, loadFailure(fmt.Errorf("game tag does not match game key"))
 	}
-	numberTeams, err := strconv.Atoi(splitOne[0])
-	if err != nil {
+	teamsStr, ok := game.Tags["Teams"]
+	if !ok {
+		return nil, loadFailure(fmt.Errorf("missing teams tag"))
+	}
+	teams := strings.Split(teamsStr, ", ")
+	seedStr, ok := game.Tags["Seed"]
+	if !ok {
+		return nil, loadFailure(fmt.Errorf("missing seed tag"))
+	}
+	seed, err := strconv.Atoi(seedStr)
+	if !ok {
 		return nil, loadFailure(err)
 	}
-	if len(teams) != numberTeams {
-		return nil, loadFailure(fmt.Errorf("length of teams %d does not match notation %d", len(teams), numberTeams))
-	}
-	seed, err := strconv.Atoi(splitOne[1])
-	if err != nil {
-		return nil, loadFailure(err)
-	}
-	game, err := NewCarcassonne(&bg.BoardGameOptions{
+	g, err := b.CreateWithBGN(&bg.BoardGameOptions{
 		Teams: teams,
 		Seed:  int64(seed),
 	})
 	if err != nil {
-		return nil, loadFailure(err)
+		return nil, err
 	}
-	// split actions - action;action;action;...
-	splitTwo := strings.Split(splitOne[3], ";")
-	for _, action := range splitTwo {
-		if action == "" {
-			break
+	for _, action := range game.Actions {
+		if action.TeamIndex >= len(teams) {
+			return nil, loadFailure(fmt.Errorf("team index %d out of range", action.TeamIndex))
 		}
-		// split first two fields of action - team,action type,details,details,...
-		splitThree := strings.SplitN(action, ",", 3)
-		if len(splitThree) < 2 {
-			return nil, loadFailure(fmt.Errorf("got %d but wanted at least %d fields when decoding action", len(splitThree), 2))
+		team := teams[action.TeamIndex]
+		actionType := notationToAction[string(action.ActionKey)]
+		if actionType == "" {
+			return nil, loadFailure(fmt.Errorf("invalid action key %s", string(action.ActionKey)))
 		}
-		teamIndex, err := strconv.Atoi(splitThree[0])
-		if err != nil {
-			return nil, loadFailure(err)
-		}
-		if teamIndex < 0 || teamIndex >= len(teams) {
-			return nil, loadFailure(fmt.Errorf("got %d but wanted a team index less than %d when decoding action", teamIndex, len(teams)))
-		}
-		team := teams[teamIndex]
-		actionType := notationIntToAction[splitThree[1]]
 		var details interface{}
-		if len(splitThree) > 2 {
-			switch actionType {
-			case ActionPlaceTile:
-				result, err := decodeNotationPlaceTileActionDetails(splitThree[2])
-				if err != nil {
-					return nil, err
-				}
-				details = result
-			case ActionPlaceToken:
-				result, err := decodeNotationPlaceTokenActionDetails(splitThree[2])
-				if err != nil {
-					return nil, err
-				}
-				details = result
-			default:
-				return nil, loadFailure(fmt.Errorf("got unneeded action details when decoding action type %s", splitThree[1]))
+		switch actionType {
+		case ActionPlaceTile:
+			result, err := decodePlaceTileActionDetails(action.Details)
+			if err != nil {
+				return nil, err
 			}
+			details = result
+		case ActionPlaceToken:
+			result, err := decodePlaceTokenActionDetails(action.Details)
+			if err != nil {
+				return nil, err
+			}
+			details = result
 		}
-		if err := game.Do(&bg.BoardGameAction{Team: team, ActionType: actionType, MoreDetails: details}); err != nil {
+		if err := g.Do(&bg.BoardGameAction{
+			Team:        team,
+			ActionType:  actionType,
+			MoreDetails: details,
+		}); err != nil {
 			return nil, err
 		}
 	}
-	return game, nil
+	return g, nil
 }
 
 func (b *Builder) Key() string {

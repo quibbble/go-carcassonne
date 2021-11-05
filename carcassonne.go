@@ -5,7 +5,9 @@ import (
 	"github.com/mitchellh/mapstructure"
 	bg "github.com/quibbble/go-boardgame"
 	"github.com/quibbble/go-boardgame/pkg/bgerr"
+	"github.com/quibbble/go-boardgame/pkg/bgn"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -163,24 +165,29 @@ func (c *Carcassonne) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error)
 	}, nil
 }
 
-func (c *Carcassonne) GetNotation() string {
-	// extra colon is left for MoreOptions which may be utilized in future additions
-	notation := fmt.Sprintf("%d:%d::", len(c.state.teams), c.seed)
-	for _, action := range c.actions {
-		base := fmt.Sprintf("%d,%d", indexOf(c.state.teams, action.Team), notationActionToInt[action.ActionType])
-		switch action.ActionType {
-		case ActionPlaceTile:
-			var details PlaceTileActionDetails
-			_ = mapstructure.Decode(action.MoreDetails, &details)
-			base = fmt.Sprintf("%s,%s;", base, details.encode())
-		case ActionPlaceToken:
-			var details PlaceTokenActionDetails
-			_ = mapstructure.Decode(action.MoreDetails, &details)
-			base = fmt.Sprintf("%s,%s;", base, details.encode())
-		default:
-			base = fmt.Sprintf("%s;", base)
-		}
-		notation += base
+func (c *Carcassonne) GetBGN() *bgn.Game {
+	tags := map[string]string{
+		"Game":  key,
+		"Teams": strings.Join(c.state.teams, ", "),
+		"Seed":  fmt.Sprintf("%d", c.seed),
 	}
-	return notation
+	actions := make([]bgn.Action, 0)
+	for _, action := range c.actions {
+		bgnAction := bgn.Action{
+			TeamIndex: indexOf(c.state.teams, action.Team),
+			ActionKey: rune(actionToNotation[action.ActionType][0]),
+		}
+		if action.ActionType == ActionPlaceTile {
+			details := action.MoreDetails.(PlaceTileActionDetails)
+			bgnAction.Details = details.encode()
+		} else if action.ActionType == ActionPlaceToken {
+			details := action.MoreDetails.(PlaceTokenActionDetails)
+			bgnAction.Details = details.encode()
+		}
+		actions = append(actions, bgnAction)
+	}
+	return &bgn.Game{
+		Tags:    tags,
+		Actions: actions,
+	}
 }

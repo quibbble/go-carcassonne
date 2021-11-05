@@ -18,9 +18,10 @@ func indexOf(items []string, item string) int {
 	return -1
 }
 
-func boolToInt(b bool) int {
-	if b {
-		return 1
+func reverseMap(m map[string]string) map[string]string {
+	n := make(map[string]string, len(m))
+	for k, v := range m {
+		n[v] = k
 	}
-	return 0
+	return n
 }
