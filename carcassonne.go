@@ -179,10 +179,12 @@ func (c *Carcassonne) GetBGN() *bgn.Game {
 		}
 		switch action.ActionType {
 		case ActionPlaceTile:
-			details := action.MoreDetails.(PlaceTileActionDetails)
+			var details PlaceTileActionDetails
+			_ = mapstructure.Decode(action.MoreDetails, &details)
 			bgnAction.Details = details.encode()
 		case ActionPlaceToken:
-			details := action.MoreDetails.(PlaceTokenActionDetails)
+			var details PlaceTokenActionDetails
+			_ = mapstructure.Decode(action.MoreDetails, &details)
 			bgnAction.Details = details.encode()
 		}
 		actions = append(actions, bgnAction)

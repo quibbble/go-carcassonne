@@ -2,7 +2,6 @@ package go_carcassonne
 
 import (
 	"encoding/json"
-	"fmt"
 	bg "github.com/quibbble/go-boardgame"
 	"github.com/quibbble/go-boardgame/pkg/bgn"
 	"github.com/stretchr/testify/assert"
@@ -48,7 +47,6 @@ func Test_Builder_BGN(t *testing.T) {
 	}
 
 	game := carcassonne.GetBGN()
-	fmt.Println(game.String())
 	carcassonneLoaded, err := builder.Load(game)
 	if err != nil {
 		t.Error(err)
