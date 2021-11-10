@@ -2,12 +2,13 @@ package go_carcassonne
 
 import (
 	"fmt"
+	bg "github.com/quibbble/go-boardgame"
 	"github.com/quibbble/go-boardgame/pkg/bgerr"
 	"strconv"
 )
 
 var (
-	actionToNotation   = map[string]string{ActionPlaceTile: "i", ActionPlaceToken: "o", ActionRotateTileRight: "r", ActionRotateTileLeft: "l"}
+	actionToNotation   = map[string]string{ActionPlaceTile: "i", ActionPlaceToken: "o", ActionRotateTileRight: "r", ActionRotateTileLeft: "l", bg.ActionSetWinners: "w"}
 	notationToAction   = reverseMap(actionToNotation)
 	sideToNotation     = map[string]string{SideTop: "t", SideRight: "r", SideBottom: "b", SideLeft: "l"}
 	notationToSide     = reverseMap(sideToNotation)
@@ -85,6 +86,6 @@ func decodePlaceTokenActionDetails(notation []string) (*PlaceTokenActionDetails,
 func loadFailure(err error) error {
 	return &bgerr.Error{
 		Err:    err,
-		Status: bgerr.StatusGameLoadFailure,
+		Status: bgerr.StatusBGNDecodingFailure,
 	}
 }

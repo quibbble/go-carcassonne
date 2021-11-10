@@ -8,7 +8,6 @@ import (
 	"github.com/quibbble/go-boardgame/pkg/bgn"
 	"math/rand"
 	"strings"
-	"time"
 )
 
 const (
@@ -101,27 +100,18 @@ func (c *Carcassonne) Do(action *bg.BoardGameAction) error {
 			return err
 		}
 		c.actions = append(c.actions, action)
-	case bg.ActionReset:
-		seed := time.Now().UnixNano()
-		c.state = newState(c.state.teams, rand.New(rand.NewSource(seed)))
-		c.actions = make([]*bg.BoardGameAction, 0)
-		c.seed = seed
-	case bg.ActionUndo:
-		if len(c.actions) > 0 {
-			undo, _ := NewCarcassonne(&bg.BoardGameOptions{Teams: c.state.teams, Seed: c.seed})
-			for _, a := range c.actions[:len(c.actions)-1] {
-				if err := undo.Do(a); err != nil {
-					return err
-				}
-			}
-			c.state = undo.state
-			c.actions = undo.actions
-		} else {
+	case bg.ActionSetWinners:
+		var details bg.SetWinnersActionDetails
+		if err := mapstructure.Decode(action.MoreDetails, &details); err != nil {
 			return &bgerr.Error{
-				Err:    fmt.Errorf("no actions to undo"),
-				Status: bgerr.StatusInvalidAction,
+				Err:    err,
+				Status: bgerr.StatusInvalidActionDetails,
 			}
 		}
+		if err := c.state.SetWinners(details.Winners); err != nil {
+			return err
+		}
+		c.actions = append(c.actions, action)
 	default:
 		return &bgerr.Error{
 			Err:    fmt.Errorf("cannot process action type %s", action.ActionType),
@@ -186,6 +176,10 @@ func (c *Carcassonne) GetBGN() *bgn.Game {
 			var details PlaceTokenActionDetails
 			_ = mapstructure.Decode(action.MoreDetails, &details)
 			bgnAction.Details = details.encode()
+		case bg.ActionSetWinners:
+			var details bg.SetWinnersActionDetails
+			_ = mapstructure.Decode(action.MoreDetails, &details)
+			bgnAction.Details, _ = details.EncodeBGN(c.state.teams)
 		}
 		actions = append(actions, bgnAction)
 	}

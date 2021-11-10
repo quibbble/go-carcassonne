@@ -67,6 +67,12 @@ func (b *Builder) Load(game *bgn.Game) (bg.BoardGameWithBGN, error) {
 				return nil, err
 			}
 			details = result
+		case bg.ActionSetWinners:
+			result, err := bg.DecodeSetWinnersActionDetailsBGN(action.Details, teams)
+			if err != nil {
+				return nil, err
+			}
+			details = result
 		}
 		if err := g.Do(&bg.BoardGameAction{
 			Team:        team,

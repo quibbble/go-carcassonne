@@ -4,8 +4,8 @@ github.com/mitchellh/mapstructure v1.4.2 h1:6h7AQ0yhTcIsmFmnAwQls75jp2Gzs4iB8W7p
 github.com/mitchellh/mapstructure v1.4.2/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/quibbble/go-boardgame v0.0.0-20211102031856-e4f84af40e4e h1:wI1+gG4661FluU64YpZsFzD6ZOTIqXLn/OHFzd87zyQ=
-github.com/quibbble/go-boardgame v0.0.0-20211102031856-e4f84af40e4e/go.mod h1:ajDNApPAOoO92CCClN+TSnDSAmbH+Ip2YnTjP2D3bm4=
+github.com/quibbble/go-boardgame v0.0.0-20211110064910-5971ddb2c5a2 h1:bmoWpOOKFQIWWiyyoeXtjXUhKCeJ8XvOIbpo2F7JrU0=
+github.com/quibbble/go-boardgame v0.0.0-20211110064910-5971ddb2c5a2/go.mod h1:ajDNApPAOoO92CCClN+TSnDSAmbH+Ip2YnTjP2D3bm4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=

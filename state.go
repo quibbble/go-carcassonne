@@ -545,6 +545,19 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 	return nil
 }
 
+func (s *state) SetWinners(winners []string) error {
+	for _, winner := range winners {
+		if !contains(s.teams, winner) {
+			return &bgerr.Error{
+				Err:    fmt.Errorf("winner not in teams"),
+				Status: bgerr.StatusInvalidActionDetails,
+			}
+		}
+	}
+	s.winners = winners
+	return nil
+}
+
 func (s *state) targets() []*bg.BoardGameAction {
 	targets := make([]*bg.BoardGameAction, 0)
 	if s.playTile != nil {
