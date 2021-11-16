@@ -41,6 +41,12 @@ func NewCarcassonne(options *bg.BoardGameOptions) (*Carcassonne, error) {
 }
 
 func (c *Carcassonne) Do(action *bg.BoardGameAction) error {
+	if len(c.state.winners) > 0 {
+		return &bgerr.Error{
+			Err:    fmt.Errorf("game already over"),
+			Status: bgerr.StatusGameOver,
+		}
+	}
 	switch action.ActionType {
 	case ActionRotateTileRight:
 		if err := c.state.RotateTileRight(action.Team); err != nil {
@@ -128,7 +134,7 @@ func (c *Carcassonne) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error)
 			Status: bgerr.StatusTooManyTeams,
 		}
 	}
-	details := CarcassonneSnapshotDetails{
+	details := CarcassonneSnapshotData{
 		PlayTile:       c.state.playTile,
 		LastPlacedTile: c.state.lastPlacedTile,
 		Board:          c.state.board.board,
@@ -171,11 +177,11 @@ func (c *Carcassonne) GetBGN() *bgn.Game {
 		case ActionPlaceTile:
 			var details PlaceTileActionDetails
 			_ = mapstructure.Decode(action.MoreDetails, &details)
-			bgnAction.Details = details.encode()
+			bgnAction.Details = details.encodeBGN()
 		case ActionPlaceToken:
 			var details PlaceTokenActionDetails
 			_ = mapstructure.Decode(action.MoreDetails, &details)
-			bgnAction.Details = details.encode()
+			bgnAction.Details = details.encodeBGN()
 		case bg.ActionSetWinners:
 			var details bg.SetWinnersActionDetails
 			_ = mapstructure.Decode(action.MoreDetails, &details)

@@ -33,8 +33,8 @@ type PlaceTokenActionDetails struct {
 	Side string
 }
 
-// CarcassonneSnapshotDetails are the details unique to carcassonne
-type CarcassonneSnapshotDetails struct {
+// CarcassonneSnapshotData is the game data unique to Carcassonne
+type CarcassonneSnapshotData struct {
 	PlayTile       *tile
 	LastPlacedTile *tile
 	Board          []*tile

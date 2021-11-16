@@ -20,11 +20,11 @@ var (
 	notationToBool     = map[string]bool{"t": true, "f": false}
 )
 
-func (p *PlaceTileActionDetails) encode() []string {
+func (p *PlaceTileActionDetails) encodeBGN() []string {
 	return []string{strconv.Itoa(p.X), strconv.Itoa(p.Y)}
 }
 
-func decodePlaceTileActionDetails(notation []string) (*PlaceTileActionDetails, error) {
+func decodePlaceTileActionDetailsBGN(notation []string) (*PlaceTileActionDetails, error) {
 	if len(notation) != 2 {
 		return nil, loadFailure(fmt.Errorf("got %d but wanted %d fields in when decoding %s details", len(notation), 2, ActionPlaceTile))
 	}
@@ -42,7 +42,7 @@ func decodePlaceTileActionDetails(notation []string) (*PlaceTileActionDetails, e
 	}, nil
 }
 
-func (p *PlaceTokenActionDetails) encode() []string {
+func (p *PlaceTokenActionDetails) encodeBGN() []string {
 	if p.Pass {
 		return []string{boolToNotation[p.Pass]}
 	} else if p.Type == Monk {
@@ -53,7 +53,7 @@ func (p *PlaceTokenActionDetails) encode() []string {
 	return []string{boolToNotation[p.Pass], strconv.Itoa(p.X), strconv.Itoa(p.Y), tokenToNotation[p.Type], sideToNotation[p.Side]}
 }
 
-func decodePlaceTokenActionDetails(notation []string) (*PlaceTokenActionDetails, error) {
+func decodePlaceTokenActionDetailsBGN(notation []string) (*PlaceTokenActionDetails, error) {
 	if len(notation) < 1 || len(notation) > 5 {
 		return nil, loadFailure(fmt.Errorf("got %d but wanted %d to %d fields in when decoding %s details", len(notation), 1, 5, ActionPlaceToken))
 	}
