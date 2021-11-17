@@ -8,6 +8,11 @@ const (
 	ActionRotateTileLeft  = "RotateTileLeft"
 )
 
+// CarcassonneMoreOptions are the additional options for creating a game of Carcassonne
+type CarcassonneMoreOptions struct {
+	Seed int64
+}
+
 // PlaceTileActionDetails is the action details for placing a tile
 type PlaceTileActionDetails struct {
 	// X and Y location where to place the tile

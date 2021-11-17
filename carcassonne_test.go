@@ -15,7 +15,9 @@ const (
 func Test_Carcassonne(t *testing.T) {
 	carcassonne, err := NewCarcassonne(&bg.BoardGameOptions{
 		Teams: []string{TeamA, TeamB},
-		Seed:  time.Now().UnixNano(),
+		MoreOptions: CarcassonneMoreOptions{
+			Seed: time.Now().UnixNano(),
+		},
 	})
 	if err != nil {
 		t.Error(err)

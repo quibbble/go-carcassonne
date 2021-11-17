@@ -39,7 +39,9 @@ func (b *Builder) Load(game *bgn.Game) (bg.BoardGameWithBGN, error) {
 	}
 	g, err := b.CreateWithBGN(&bg.BoardGameOptions{
 		Teams: teams,
-		Seed:  int64(seed),
+		MoreOptions: CarcassonneMoreOptions{
+			Seed: int64(seed),
+		},
 	})
 	if err != nil {
 		return nil, err

@@ -11,7 +11,11 @@ import (
 func Test_Builder_BGN(t *testing.T) {
 	builder := Builder{}
 	teams := []string{TeamA, TeamB}
-	carcassonne, err := builder.CreateWithBGN(&bg.BoardGameOptions{Teams: teams, Seed: 123})
+	carcassonne, err := builder.CreateWithBGN(&bg.BoardGameOptions{
+		Teams: teams,
+		MoreOptions: CarcassonneMoreOptions{
+			Seed: 123,
+		}})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

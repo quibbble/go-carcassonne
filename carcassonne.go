@@ -18,7 +18,7 @@ const (
 type Carcassonne struct {
 	state   *state
 	actions []*bg.BoardGameAction
-	seed    int64
+	options *CarcassonneMoreOptions
 }
 
 func NewCarcassonne(options *bg.BoardGameOptions) (*Carcassonne, error) {
@@ -33,10 +33,17 @@ func NewCarcassonne(options *bg.BoardGameOptions) (*Carcassonne, error) {
 			Status: bgerr.StatusTooManyTeams,
 		}
 	}
+	var details CarcassonneMoreOptions
+	if err := mapstructure.Decode(options.MoreOptions, &details); err != nil {
+		return nil, &bgerr.Error{
+			Err:    err,
+			Status: bgerr.StatusInvalidOption,
+		}
+	}
 	return &Carcassonne{
-		state:   newState(options.Teams, rand.New(rand.NewSource(options.Seed))),
+		state:   newState(options.Teams, rand.New(rand.NewSource(details.Seed))),
 		actions: make([]*bg.BoardGameAction, 0),
-		seed:    options.Seed,
+		options: &details,
 	}, nil
 }
 
@@ -165,7 +172,7 @@ func (c *Carcassonne) GetBGN() *bgn.Game {
 	tags := map[string]string{
 		"Game":  key,
 		"Teams": strings.Join(c.state.teams, ", "),
-		"Seed":  fmt.Sprintf("%d", c.seed),
+		"Seed":  fmt.Sprintf("%d", c.options.Seed),
 	}
 	actions := make([]bgn.Action, 0)
 	for _, action := range c.actions {
