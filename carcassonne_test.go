@@ -1,10 +1,11 @@
 package go_carcassonne
 
 import (
-	bg "github.com/quibbble/go-boardgame"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	bg "github.com/quibbble/go-boardgame"
+	"github.com/stretchr/testify/assert"
 )
 
 const (

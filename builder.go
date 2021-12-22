@@ -2,10 +2,11 @@ package go_carcassonne
 
 import (
 	"fmt"
-	bg "github.com/quibbble/go-boardgame"
-	"github.com/quibbble/go-boardgame/pkg/bgn"
 	"strconv"
 	"strings"
+
+	bg "github.com/quibbble/go-boardgame"
+	"github.com/quibbble/go-boardgame/pkg/bgn"
 )
 
 const key = "Carcassonne"

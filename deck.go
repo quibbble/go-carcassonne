@@ -35,16 +35,11 @@ func (d *deck) Shuffle() {
 }
 
 func (d *deck) Empty() bool {
-	if len(d.tiles) <= 0 {
-		return true
-	}
-	return false
+	return len(d.tiles) == 0
 }
 
 func (d *deck) Add(tiles ...*tile) {
-	for _, tile := range tiles {
-		d.tiles = append(d.tiles, tile)
-	}
+	d.tiles = append(d.tiles, tiles...)
 	d.Shuffle()
 }
 

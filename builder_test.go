@@ -2,10 +2,11 @@ package go_carcassonne
 
 import (
 	"encoding/json"
+	"testing"
+
 	bg "github.com/quibbble/go-boardgame"
 	"github.com/quibbble/go-boardgame/pkg/bgn"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Builder_BGN(t *testing.T) {
