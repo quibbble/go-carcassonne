@@ -33,6 +33,11 @@ func NewCarcassonne(options *bg.BoardGameOptions) (*Carcassonne, error) {
 			Err:    fmt.Errorf("at most %d teams allowed to create a game of %s", maxTeams, key),
 			Status: bgerr.StatusTooManyTeams,
 		}
+	} else if duplicates(options.Teams) {
+		return nil, &bgerr.Error{
+			Err:    fmt.Errorf("duplicate teams found"),
+			Status: bgerr.StatusInvalidOption,
+		}
 	}
 	var details CarcassonneMoreOptions
 	if err := mapstructure.Decode(options.MoreOptions, &details); err != nil {

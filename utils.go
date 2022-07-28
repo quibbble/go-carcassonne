@@ -25,3 +25,14 @@ func reverseMap(m map[string]string) map[string]string {
 	}
 	return n
 }
+
+func duplicates(list []string) bool {
+	for idx, v1 := range list {
+		for _, v2 := range list[idx+1:] {
+			if v1 == v2 {
+				return true
+			}
+		}
+	}
+	return false
+}
