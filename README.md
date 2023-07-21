@@ -1,10 +1,10 @@
 # Go-carcassonne
 
-Go-carcassonne is a [Go](https://golang.org) implementation of the board game [Carcassonne](https://boardgamegeek.com/boardgame/822/carcassonne). Please note that this repo only includes game logic and a basic API to interact with the game but does NOT include any form of GUI.
+Go-carcassonne is a [Go](https://golang.org) implementation of the board game [Carcassonne](https://en.wikipedia.org/wiki/Carcassonne_(board_game)). Please note that this repo only includes game logic and a basic API to interact with the game but does NOT include any form of GUI.
 
-Check out [quibbble.com](https://quibbble.com/annex) if you wish to view and play a live version of this game which utilizes this project along with a separate custom UI.
+Check out [carcassonne.quibbble.com](https://carcassonne.quibbble.com) if you wish to view and play a live version of this game which utilizes this project along with a separate custom UI.
 
-[![Quibbble Annex](https://i.imgur.com/sLVp1x0.png)](https://quibbble.com/annex)
+[![Quibbble Carcassonne](https://i.imgur.com/sLVp1x0.png)](https://quibbble.com/annex)
 
 ## Usage
 
