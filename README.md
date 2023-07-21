@@ -4,7 +4,7 @@ Go-carcassonne is a [Go](https://golang.org) implementation of the board game [C
 
 Check out [carcassonne.quibbble.com](https://carcassonne.quibbble.com) if you wish to view and play a live version of this game which utilizes this project along with a separate custom UI.
 
-[![Quibbble Carcassonne](https://i.imgur.com/sLVp1x0.png)](https://quibbble.com/annex)
+[![Quibbble Carcassonne](https://i.imgur.com/sLVp1x0.png)](https://carcassonne.quibbble.com)
 
 ## Usage
 
