@@ -1,10 +1,10 @@
 module github.com/quibbble/go-carcassonne
 
-go 1.18
+go 1.20
 
 require (
 	github.com/mitchellh/mapstructure v1.4.2
-	github.com/quibbble/go-boardgame v0.0.0-20211222023837-3abfb70daada
+	github.com/quibbble/go-boardgame v1.0.6
 	github.com/stretchr/testify v1.7.0
 )
 
