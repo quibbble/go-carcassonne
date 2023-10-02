@@ -52,3 +52,7 @@ func (d *deck) Draw() (*tile, error) {
 	d.tiles = d.tiles[:size-1]
 	return tile, nil
 }
+
+func (d *deck) Size() int {
+	return len(d.tiles)
+}

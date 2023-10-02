@@ -65,33 +65,9 @@ func (c *Carcassonne) Do(action *bg.BoardGameAction) error {
 		if err := c.state.RotateTileRight(action.Team); err != nil {
 			return err
 		}
-		if len(c.actions) > 0 && c.actions[len(c.actions)-1].ActionType == ActionRotateTileLeft {
-			// last action was RotateTileLeft so RotateTileRight undoes RotateTileLeft
-			c.actions = c.actions[:len(c.actions)-1]
-		} else if len(c.actions) > 2 &&
-			c.actions[len(c.actions)-1].ActionType == ActionRotateTileRight &&
-			c.actions[len(c.actions)-2].ActionType == ActionRotateTileRight &&
-			c.actions[len(c.actions)-3].ActionType == ActionRotateTileRight {
-			// last action three actions were RotateTileRight so fourth RotateTileRight undoes past three
-			c.actions = c.actions[:len(c.actions)-3]
-		} else {
-			c.actions = append(c.actions, action)
-		}
 	case ActionRotateTileLeft:
 		if err := c.state.RotateTileLeft(action.Team); err != nil {
 			return err
-		}
-		if len(c.actions) > 0 && c.actions[len(c.actions)-1].ActionType == ActionRotateTileRight {
-			// last action was RotateTileRight so RotateTileLeft undoes RotateTileRight
-			c.actions = c.actions[:len(c.actions)-1]
-		} else if len(c.actions) > 2 &&
-			c.actions[len(c.actions)-1].ActionType == ActionRotateTileLeft &&
-			c.actions[len(c.actions)-2].ActionType == ActionRotateTileLeft &&
-			c.actions[len(c.actions)-3].ActionType == ActionRotateTileLeft {
-			// last action three actions were RotateTileLeft so fourth RotateTileLeft undoes past three
-			c.actions = c.actions[:len(c.actions)-3]
-		} else {
-			c.actions = append(c.actions, action)
 		}
 	case ActionPlaceTile:
 		var details PlaceTileActionDetails
@@ -101,11 +77,10 @@ func (c *Carcassonne) Do(action *bg.BoardGameAction) error {
 				Status: bgerr.StatusInvalidActionDetails,
 			}
 		}
-		details.Tile = c.state.playTile
-		if err := c.state.PlaceTile(action.Team, details.X, details.Y); err != nil {
+		tile := newTile(details.Tile.Top, details.Tile.Right, details.Tile.Bottom, details.Tile.Left, details.Tile.Center, details.Tile.ConnectedCitySides, details.Tile.Banner)
+		if err := c.state.PlaceTile(action.Team, tile, details.X, details.Y); err != nil {
 			return err
 		}
-		action.MoreDetails = details
 		c.actions = append(c.actions, action)
 	case ActionPlaceToken:
 		var details PlaceTokenActionDetails
@@ -148,7 +123,6 @@ func (c *Carcassonne) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error)
 		}
 	}
 	details := CarcassonneSnapshotData{
-		PlayTile:       c.state.playTile,
 		LastPlacedTile: c.state.lastPlacedTile,
 		Board:          c.state.board.board,
 		BoardTokens:    c.state.boardTokens,
@@ -156,9 +130,8 @@ func (c *Carcassonne) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error)
 		Scores:         c.state.scores,
 		TilesRemaining: len(c.state.deck.tiles),
 	}
-	if len(team) == 1 && c.state.turn != team[0] {
-		details.PlayTile = nil
-		details.LastPlacedTile = nil
+	if len(team) == 1 {
+		details.PlayTile = c.state.playTiles[team[0]]
 	}
 	var targets []*bg.BoardGameAction
 	if len(c.state.winners) == 0 && (len(team) == 0 || (len(team) == 1 && team[0] == c.state.turn)) {

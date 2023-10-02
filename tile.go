@@ -195,3 +195,19 @@ func (t *tile) connectedFarmSides(farmSide string) ([]string, error) {
 	}
 	return points, nil
 }
+
+func (t tile) equals(t2 *tile) bool {
+	for i := 0; i < 4; i++ {
+		if t.Banner == t2.Banner &&
+			t.ConnectedCitySides == t2.ConnectedCitySides &&
+			t.Center == t2.Center &&
+			t.Sides[SideTop] == t2.Sides[SideTop] &&
+			t.Sides[SideRight] == t2.Sides[SideRight] &&
+			t.Sides[SideBottom] == t2.Sides[SideBottom] &&
+			t.Sides[SideLeft] == t2.Sides[SideLeft] {
+			return true
+		}
+		t.RotateRight()
+	}
+	return false
+}

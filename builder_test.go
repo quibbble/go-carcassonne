@@ -28,6 +28,9 @@ func Test_Builder_BGN(t *testing.T) {
 		MoreDetails: PlaceTileActionDetails{
 			X: 1,
 			Y: 0,
+			Tile: TileActionDetails{
+				Farm, Farm, Road, Road, NilStructure, false, false,
+			},
 		},
 	})
 	if err != nil {
@@ -104,7 +107,7 @@ func Test_Builder_Notations(t *testing.T) {
 					{
 						TeamIndex: 0,
 						ActionKey: 'i',
-						Details:   []string{"1", "0"},
+						Details:   []string{"1", "0", "f", "f", "r", "r", "n", "f", "f"},
 					},
 					{
 						TeamIndex: 0,

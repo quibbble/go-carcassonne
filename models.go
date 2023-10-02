@@ -19,8 +19,12 @@ type PlaceTileActionDetails struct {
 	X, Y int
 
 	// Tile is the tile being placed
-	// Not sent by user - set in server for documentation only
-	Tile *tile
+	Tile TileActionDetails
+}
+
+type TileActionDetails struct {
+	Top, Right, Bottom, Left, Center string
+	ConnectedCitySides, Banner       bool
 }
 
 // PlaceTokenActionDetails is the action details for placing a token

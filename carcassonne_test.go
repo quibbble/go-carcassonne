@@ -28,7 +28,7 @@ func Test_Carcassonne(t *testing.T) {
 	assert.Equal(t, 1, len(carcassonne.state.board.board), "board missing start tile")
 
 	// place all road tile to right of start tile
-	carcassonne.state.playTile = newTile(Road, Road, Road, Road, NilStructure, false, false)
+	carcassonne.state.playTiles[carcassonne.state.turn] = newTile(Road, Road, Road, Road, NilStructure, false, false)
 	carcassonne.state.turn = TeamA
 	err = carcassonne.Do(&bg.BoardGameAction{
 		Team:       TeamA,
@@ -36,6 +36,9 @@ func Test_Carcassonne(t *testing.T) {
 		MoreDetails: PlaceTileActionDetails{
 			X: 1,
 			Y: 0,
+			Tile: TileActionDetails{
+				Road, Road, Road, Road, NilStructure, false, false,
+			},
 		},
 	})
 	if err != nil {
@@ -67,13 +70,16 @@ func Test_Carcassonne(t *testing.T) {
 	assert.Equal(t, TeamB, carcassonne.state.turn, "incorrect team's turn")
 
 	// place tile to left of start tile completing a road segment
-	carcassonne.state.playTile = newTile(Road, Road, Farm, Road, NilStructure, false, false)
+	carcassonne.state.playTiles[carcassonne.state.turn] = newTile(Road, Road, Farm, Road, NilStructure, false, false)
 	err = carcassonne.Do(&bg.BoardGameAction{
 		Team:       TeamB,
 		ActionType: ActionPlaceTile,
 		MoreDetails: PlaceTileActionDetails{
 			X: -1,
 			Y: 0,
+			Tile: TileActionDetails{
+				Road, Road, Farm, Road, NilStructure, false, false,
+			},
 		},
 	})
 	if err != nil {

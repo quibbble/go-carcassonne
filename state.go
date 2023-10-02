@@ -15,8 +15,8 @@ type state struct {
 	turn           string
 	teams          []string
 	winners        []string
-	playTile       *tile // the tile to place onto the board at the start of any given turn
-	lastPlacedTile *tile // the tile that was placed this turn
+	playTiles      map[string]*tile // teams to the tiles to place onto the board at the start of any given turn
+	lastPlacedTile *tile            // the tile that was placed this turn
 	board          *board
 	boardTokens    []*token       // a list of tokens currently on the board
 	tokens         map[string]int // number of tokens each team can play
@@ -27,17 +27,21 @@ type state struct {
 func newState(teams []string, random *rand.Rand) *state {
 	tokens := make(map[string]int)
 	scores := make(map[string]int)
+	playTiles := make(map[string]*tile)
 	for _, team := range teams {
 		tokens[team] = 7
 		scores[team] = 0
 	}
 	deck := newDeck(random)
-	playTile, _ := deck.Draw()
+	for _, team := range teams {
+		tile, _ := deck.Draw()
+		playTiles[team] = tile
+	}
 	return &state{
 		turn:           teams[0],
 		teams:          teams,
 		winners:        make([]string, 0),
-		playTile:       playTile,
+		playTiles:      playTiles,
 		lastPlacedTile: nil,
 		board:          newBoard(),
 		boardTokens:    make([]*token, 0),
@@ -48,60 +52,48 @@ func newState(teams []string, random *rand.Rand) *state {
 }
 
 func (s *state) RotateTileRight(team string) error {
-	if team != s.turn {
-		return &bgerr.Error{
-			Err:    fmt.Errorf("%s cannot play on %s turn", team, s.turn),
-			Status: bgerr.StatusWrongTurn,
-		}
-	}
-	if s.playTile == nil {
+	if s.playTiles[team] == nil {
 		return &bgerr.Error{
 			Err:    fmt.Errorf("cannot rotate tile"),
 			Status: bgerr.StatusInvalidAction,
 		}
 	}
-	s.playTile.RotateRight()
+	s.playTiles[team].RotateRight()
 	return nil
 }
 
 func (s *state) RotateTileLeft(team string) error {
-	if team != s.turn {
-		return &bgerr.Error{
-			Err:    fmt.Errorf("%s cannot play on %s turn", team, s.turn),
-			Status: bgerr.StatusWrongTurn,
-		}
-	}
-	if s.playTile == nil {
+	if s.playTiles[team] == nil {
 		return &bgerr.Error{
 			Err:    fmt.Errorf("cannot rotate tile"),
 			Status: bgerr.StatusInvalidAction,
 		}
 	}
-	s.playTile.RotateLeft()
+	s.playTiles[team].RotateLeft()
 	return nil
 }
 
-func (s *state) PlaceTile(team string, x, y int) error {
+func (s *state) PlaceTile(team string, tile *tile, x, y int) error {
 	if team != s.turn {
 		return &bgerr.Error{
 			Err:    fmt.Errorf("%s cannot play on %s turn", team, s.turn),
 			Status: bgerr.StatusWrongTurn,
 		}
 	}
-	if s.playTile == nil {
+	if !tile.equals(s.playTiles[team]) {
 		return &bgerr.Error{
-			Err:    fmt.Errorf("cannot place tile"),
-			Status: bgerr.StatusInvalidAction,
+			Err:    fmt.Errorf("%s cannot place tile %+v", team, tile),
+			Status: bgerr.StatusInvalidActionDetails,
 		}
 	}
-	if err := s.board.Place(s.playTile, x, y); err != nil {
+	if err := s.board.Place(tile, x, y); err != nil {
 		return &bgerr.Error{
 			Err:    err,
 			Status: bgerr.StatusInvalidAction,
 		}
 	}
-	s.lastPlacedTile = s.playTile
-	s.playTile = nil
+	s.lastPlacedTile = tile
+	s.playTiles[team] = nil
 
 	// if there are no tokens to place or cannot place token anywhere skip place token action here
 	if s.tokens[s.turn] == 0 || len(s.targets()) <= 1 {
@@ -125,7 +117,7 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 			Status: bgerr.StatusWrongTurn,
 		}
 	}
-	if s.playTile != nil {
+	if s.playTiles[team] != nil {
 		return &bgerr.Error{
 			Err:    fmt.Errorf("cannot place token"),
 			Status: bgerr.StatusInvalidAction,
@@ -359,17 +351,46 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 			}
 		}
 	}
+
+	// draw tile for player
+	// there are cases when other players could not draw in which case draw for them first
 	if !s.deck.Empty() {
-		tile, _ := s.deck.Draw()
-		// check to ensure can play
-		breaker := 0
-		for !s.board.playable(tile) && breaker < 9 {
-			s.deck.Add(tile)
-			tile, _ = s.deck.Draw()
-			breaker++
+		for idx, team := range s.teams {
+			if team == s.turn {
+				nextIdx := (idx + 1) % len(s.teams)
+				for i := nextIdx; i < nextIdx+len(s.teams); i++ {
+					t := s.teams[i%len(s.teams)]
+					if s.playTiles[t] == nil {
+						size := s.deck.Size()
+						tile, _ := s.deck.Draw()
+						// check to ensure can play
+						breaker := 0
+						for !s.board.playable(tile) && breaker < size {
+							s.deck.Add(tile)
+							tile, _ = s.deck.Draw()
+							breaker++
+						}
+						if breaker >= size {
+							tile = nil
+						} else {
+							s.playTiles[team] = tile
+						}
+					}
+				}
+				break
+			}
 		}
-		s.playTile = tile
-		s.lastPlacedTile = nil
+	}
+
+	tilesInHands := 0
+	for _, tile := range s.playTiles {
+		if tile != nil {
+			tilesInHands++
+		}
+	}
+
+	s.lastPlacedTile = nil
+	if tilesInHands > 0 {
 		// next turn
 		for idx, team := range s.teams {
 			if team == s.turn {
@@ -378,7 +399,6 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 			}
 		}
 	} else {
-		s.lastPlacedTile = nil
 		// score incomplete roads, cities, and cloister and score farms
 		for len(s.boardTokens) > 0 {
 			token := s.boardTokens[0]
@@ -544,7 +564,7 @@ func (s *state) SetWinners(winners []string) error {
 
 func (s *state) targets() []*bg.BoardGameAction {
 	targets := make([]*bg.BoardGameAction, 0)
-	if s.playTile != nil {
+	if s.playTiles[s.turn] != nil {
 		// add rotating tile as valid targets
 		targets = append(targets, &bg.BoardGameAction{
 			Team:       s.turn,
@@ -558,7 +578,7 @@ func (s *state) targets() []*bg.BoardGameAction {
 		for _, emptySpace := range emptySpaces {
 			valid := true
 			for _, side := range Sides {
-				if emptySpace.adjacent[side] != nil && emptySpace.adjacent[side].Sides[AcrossSide[side]] != s.playTile.Sides[side] {
+				if emptySpace.adjacent[side] != nil && emptySpace.adjacent[side].Sides[AcrossSide[side]] != s.playTiles[s.turn].Sides[side] {
 					valid = false
 				}
 			}
@@ -685,7 +705,7 @@ func (s *state) targets() []*bg.BoardGameAction {
 
 func (s *state) message() string {
 	message := fmt.Sprintf("%s must place a tile", s.turn)
-	if s.playTile == nil {
+	if s.playTiles[s.turn] == nil {
 		message = fmt.Sprintf("%s must place a token", s.turn)
 	}
 	if len(s.winners) > 0 {
