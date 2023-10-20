@@ -44,13 +44,13 @@ type PlaceTokenActionDetails struct {
 
 // CarcassonneSnapshotData is the game data unique to Carcassonne
 type CarcassonneSnapshotData struct {
-	PlayTile       *tile
-	LastPlacedTile *tile
-	Board          []*tile
-	BoardTokens    []*token
-	Tokens         map[string]int
-	Scores         map[string]int
-	TilesRemaining int
+	PlayTile        *tile
+	LastPlacedTiles map[string]*tile
+	Board           []*tile
+	BoardTokens     []*token
+	Tokens          map[string]int
+	Scores          map[string]int
+	TilesRemaining  int
 }
 
 // startTile the tile at 0,0 at the start of the game

@@ -123,12 +123,12 @@ func (c *Carcassonne) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error)
 		}
 	}
 	details := CarcassonneSnapshotData{
-		LastPlacedTile: c.state.lastPlacedTile,
-		Board:          c.state.board.board,
-		BoardTokens:    c.state.boardTokens,
-		Tokens:         c.state.tokens,
-		Scores:         c.state.scores,
-		TilesRemaining: len(c.state.deck.tiles),
+		LastPlacedTiles: c.state.lastPlacedTiles,
+		Board:           c.state.board.board,
+		BoardTokens:     c.state.boardTokens,
+		Tokens:          c.state.tokens,
+		Scores:          c.state.scores,
+		TilesRemaining:  len(c.state.deck.tiles),
 	}
 	if len(team) == 1 {
 		details.PlayTile = c.state.playTiles[team[0]]
