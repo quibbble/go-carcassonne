@@ -82,7 +82,7 @@ func (s *state) PlaceTile(team string, tile *tile, x, y int) error {
 			Status: bgerr.StatusWrongTurn,
 		}
 	}
-	if !tile.equals(s.playTiles[team]) {
+	if s.playTiles[team] == nil || !tile.equals(s.playTiles[team]) {
 		return &bgerr.Error{
 			Err:    fmt.Errorf("%s cannot place tile %+v", team, tile),
 			Status: bgerr.StatusInvalidActionDetails,
