@@ -151,8 +151,6 @@ func (t *tile) connectedFarmSides(farmSide string) ([]string, error) {
 		}
 		// if access to across side blocked return
 		if (t.Sides[clockwiseSide] == Road && t.Sides[counterClockwiseSide] == Road) ||
-			(t.Sides[clockwiseSide] == Road && t.Sides[counterClockwiseSide] == City) ||
-			(t.Sides[clockwiseSide] == City && t.Sides[counterClockwiseSide] == Road) ||
 			(t.Sides[clockwiseSide] == City && t.Sides[counterClockwiseSide] == City && t.ConnectedCitySides) {
 			return points, nil
 		}
