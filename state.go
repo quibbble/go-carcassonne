@@ -234,6 +234,10 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 				}
 			}
 			if city.complete {
+				// add to completed list in board
+				s.board.completeCities = append(s.board.completeCities, city)
+
+				// check if token inside city
 				inside := tokensInStructure(s.boardTokens, city)
 				if len(inside) > 0 {
 					// score and add points
@@ -253,8 +257,6 @@ func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) e
 						s.tokens[token.Team]++
 					}
 					s.boardTokens = removeTokens(s.boardTokens, inside...)
-					// add to completed list in board
-					s.board.completeCities = append(s.board.completeCities, city)
 					// set color of completed
 					for _, n := range city.nodes {
 						for _, side := range n.sides {
