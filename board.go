@@ -100,20 +100,20 @@ func (b *board) generateCity(x, y int, side string) (*structure, error) {
 	if tile.Sides[side] != City {
 		return nil, fmt.Errorf("side %s does not contain city section at tile %d,%d", side, x, y)
 	}
-	// perform BFS
+	// perform DFS - don't use BFS - will lead to city side edge case
 	complete := true
 	seen := make([]*node, 0)         // keeps track of tile and sides in city
 	visited := make(map[string]bool) // key is "XY" of tile
-	queue := make([]*connection, 0)
+	stack := make([]*connection, 0)
 
-	queue = append(queue, &connection{
+	stack = append(stack, &connection{
 		tile: tile,
 		side: side,
 	})
 	visited[fmt.Sprintf("%d%d", x, y)] = true
-	for len(queue) > 0 {
-		front := queue[0]
-		queue = queue[1:]
+	for len(stack) > 0 {
+		front := stack[0]
+		stack = stack[1:]
 
 		sides, err := front.tile.connectedCitySides(front.side)
 		if err != nil {
@@ -139,15 +139,15 @@ func (b *board) generateCity(x, y int, side string) (*structure, error) {
 					}
 				}
 			} else if !visited[fmt.Sprintf("%d%d", adjacentTile.X, adjacentTile.Y)] {
-				queue = append(queue, &connection{
+				stack = append([]*connection{{
 					tile: adjacentTile,
 					side: AcrossSide[s],
-				})
+				}}, stack...)
 				visited[fmt.Sprintf("%d%d", adjacentTile.X, adjacentTile.Y)] = true
 			}
 		}
 		// continued edge case for disconnected city sides that end up being part of the same city
-		if len(queue) == 0 && !front.tile.ConnectedCitySides {
+		if len(stack) == 0 && !front.tile.ConnectedCitySides {
 			for side, section := range front.tile.Sides {
 				if section == City {
 					x := front.tile.X
