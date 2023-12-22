@@ -88,6 +88,14 @@ func (b *Builder) Load(game *bgn.Game) (bg.BoardGameWithBGN, error) {
 	return g, nil
 }
 
+func (b *Builder) Info() *bg.BoardGameInfo {
+	return &bg.BoardGameInfo{
+		GameKey:  b.Key(),
+		MinTeams: minTeams,
+		MaxTeams: maxTeams,
+	}
+}
+
 func (b *Builder) Key() string {
 	return key
 }
